@@ -80,7 +80,7 @@ const std::string errorString(cl_int error)
 }
 
 std::string
-read_source(const std::string& filename)
+readSource(const std::string& filename)
 {
 	std::ifstream t(filename);
 	std::stringstream buffer;

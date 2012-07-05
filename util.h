@@ -36,7 +36,7 @@ const std::string errorString(cl_int error);
   \param path to the file to be read
   \return string object with text from the file
 */
-std::string read_source(const std::string &filename);
+std::string readSource(const std::string &filename);
 
 inline void 
 __checkError(cl_int sample, cl_int reference, const char* filename, const int line)
