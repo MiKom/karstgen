@@ -25,6 +25,12 @@ int main()
 	return 0;
 }
 
+/**
+  This function initializes OpenCL context and command queue for each device
+  available on the first platform returned by clGetPlatformIDs.
+  
+  Results are placed in global objects context and queues.
+  */
 void initCL()
 {
 	cl_int errorNum;
@@ -80,6 +86,7 @@ void initCL()
 	                                  NULL, &errorNum);
 	checkError(errorNum, CL_SUCCESS);
 	
+	//initialize command queue for each device and put it in global object
 	for(int i=0; i<deviceCount; i++) {
 		cl_command_queue queue = clCreateCommandQueue(context, 
 		                                              devices[i], 0,

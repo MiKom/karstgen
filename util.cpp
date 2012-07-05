@@ -1,5 +1,6 @@
 #include "util.h"
-
+#include <fstream>
+#include <sstream>
 const std::string errorString(cl_int error)
 {
 	static const std::string errors[] = {
@@ -76,4 +77,13 @@ const std::string errorString(cl_int error)
 	}  else {
 		return "Unknown Error";
 	}
+}
+
+std::string
+read_source(const std::string& filename)
+{
+	std::ifstream t(filename);
+	std::stringstream buffer;
+	buffer << t.rdbuf();
+	return buffer.str();
 }
