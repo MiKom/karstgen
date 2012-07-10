@@ -6,24 +6,22 @@
 #include "util.h"
 
 using namespace AVR;
+using namespace std;
 
 cl_context context;
-std::vector<cl_command_queue> queues;
+vector<cl_command_queue> queues;
 
-static const int MAX_DEVICES = 8;
 
-void initCL();
+static const string
+marchingCubesKernelPath = "kernels/marching_cubes.cl";
 
-int main()
-{
-	try {
-		initCL();
-	} catch (std::runtime_error &e) {
-		std::cout << e.what();
-		return 1;
-	}
-	return 0;
-}
+static const string
+scanKernelPath = "kernel/scan.cl";
+
+cl_kernel gridValueKernel;
+cl_kernel scanKernel;
+cl_kernel classifyVoxelKernel;
+cl_kernel generateKenrel;
 
 /**
   This function initializes OpenCL context and command queue for each device
@@ -31,6 +29,25 @@ int main()
   
   Results are placed in global objects context and queues.
   */
+void initCL();
+
+/**
+  This function initializes all kernels that are necessary for computation
+  */
+void initKernels();
+
+int main()
+{
+	try {
+		initCL();
+		initKernels();
+	} catch (runtime_error &e) {
+		cout << e.what();
+		return 1;
+	}
+	return 0;
+}
+
 void initCL()
 {
 	cl_int errorNum;
@@ -41,7 +58,7 @@ void initCL()
 	errorNum = clGetPlatformIDs(0, NULL, &platformCount);
 	checkError(errorNum, CL_SUCCESS);
 	if(platformCount == 0) {
-		throw std::runtime_error("No OpenCL platforms found");
+		throw runtime_error("No OpenCL platforms found");
 	}
 	
 	//Get the firs platform
@@ -53,7 +70,7 @@ void initCL()
 	errorNum = clGetPlatformInfo(platform, CL_PLATFORM_NAME,
 	                             sizeof(platformName), platformName, NULL);
 	checkError(errorNum, CL_SUCCESS);
-	std::cout << "Found OpenCL platform: " << platformName << std::endl;
+	cout << "Found OpenCL platform: " << platformName << endl;
 	
 	//List and initialize devices
 	cl_uint deviceCount;
@@ -61,7 +78,7 @@ void initCL()
 	                          &deviceCount);
 	checkError(errorNum, CL_SUCCESS);
 	if(deviceCount == 0) {
-		throw std::runtime_error("No GPU device found on this platform");
+		throw runtime_error("No GPU device found on this platform");
 	}
 	cl_device_id* devices = new cl_device_id[deviceCount];
 	errorNum = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, deviceCount,
@@ -74,7 +91,7 @@ void initCL()
 		                           sizeof(nameBuf), nameBuf, NULL);
 		checkError(errorNum, CL_SUCCESS);
 		
-		std::cout << "Found device " << i <<": " << nameBuf << std::endl;
+		cout << "Found device " << i <<": " << nameBuf << endl;
 	}
 	
 	//initialize context
@@ -95,4 +112,9 @@ void initCL()
 		queues.push_back(queue);
 	}
 	delete devices;
+}
+
+void initKernels()
+{
+	
 }

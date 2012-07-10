@@ -1,9 +1,12 @@
 #include "util.h"
 #include <fstream>
 #include <sstream>
-const std::string errorString(cl_int error)
+
+using namespace std;
+
+const string errorString(cl_int error)
 {
-	static const std::string errors[] = {
+	static const string errors[] = {
 		"CL_SUCCESS",                                   //0
 		"CL_DEVICE_NOT_FOUND",                          //-1
 		"CL_DEVICE_NOT_AVAILABLE",                      //-2
@@ -79,11 +82,15 @@ const std::string errorString(cl_int error)
 	}
 }
 
-std::string
-readSource(const std::string& filename)
+string
+readSource(const string& filename)
 {
-	std::ifstream t(filename);
-	std::stringstream buffer;
-	buffer << t.rdbuf();
-	return buffer.str();
+	ifstream t(filename);
+	
+	//beware the most vexing parse! Parentheses around the second parameter
+	//are here because of it
+	//http://en.wikipedia.org/wiki/Most_vexing_parse
+	string source(istreambuf_iterator<char>(t),
+	              (istreambuf_iterator<char>()));
+	return source; 
 }
