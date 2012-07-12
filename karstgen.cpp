@@ -18,7 +18,7 @@ marchingCubesKernelPath = "kernels/marching_cubes.cl";
 static const string
 scanKernelPath = "kernel/scan.cl";
 
-cl_kernel gridValueKernel;
+cl_kernel blobValueKernel;
 cl_kernel scanKernel;
 cl_kernel classifyVoxelKernel;
 cl_kernel generateKenrel;

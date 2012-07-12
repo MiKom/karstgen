@@ -21,6 +21,10 @@ FILE(COPY kernels DESTINATION ${PROJECT_BINARY_DIR})
 INCLUDE_DIRECTORIES( ${OPENCL_INCLUDE_DIRS} )
 
 ADD_EXECUTABLE(karstgen
+	kernels/scan.cl
+	kernels/marching_cubes.cl
+	kernels/util.cl
+
 	karstgen.cpp
 	util.cpp
 )
