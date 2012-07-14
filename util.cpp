@@ -94,3 +94,58 @@ readSource(const string& filename)
 	              (istreambuf_iterator<char>()));
 	return source; 
 }
+
+cl::Program buildProgram(const std::string& path, cl::Context& context)
+{
+	string source = readSource(path);
+	cl::Program program (context, source);
+	try {
+		program.build();
+	} catch (cl::Error& e) {
+		if(e.err() == CL_BUILD_PROGRAM_FAILURE ) {
+			ostringstream os;
+			os 
+			  << "Build of program "
+			  << path
+			  << " failed with following log: "
+			  << endl
+			  << buildLog(program);
+			throw BuildError(path, os.str());
+		} else {
+			throw e;
+		}
+	}
+	return program;
+}
+
+cl_int buildStatus(const cl::Program& program)
+{
+	vector<cl::Device> devices;
+	program.getInfo(CL_PROGRAM_DEVICES, &devices);
+	for(cl::Device &dev : devices) {
+		cl_int status;
+		program.getBuildInfo(dev, CL_PROGRAM_BUILD_STATUS, &status);
+		if(status != CL_BUILD_SUCCESS) {
+			return status;
+		}
+	}
+	return CL_SUCCESS;
+}
+
+string buildLog(const cl::Program& program)
+{
+	ostringstream os;
+	vector<cl::Device> devices;
+	program.getInfo(CL_PROGRAM_DEVICES, &devices);
+	for(int i=0; i<devices.size(); i++) {
+		cl::Device& dev = devices[i];
+		string tmp;
+		dev.getInfo(CL_DEVICE_NAME, &tmp);
+		os << "Build log for device " << i <<": " << tmp << endl;
+		os << "-------------------------------------" << endl;
+		program.getBuildInfo(dev, CL_PROGRAM_BUILD_LOG, &tmp);
+		os << tmp;
+		os << "-------------------------------------" << endl;
+	}
+	return os.str();
+}

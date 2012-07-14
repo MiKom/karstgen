@@ -2,10 +2,11 @@
 #include <iostream>
 #include <vector>
 #include <avr/avr++.h>
-#include "util.h"
 
 #define __CL_ENABLE_EXCEPTIONS
 #include <CL/cl.hpp>
+
+#include "util.h"
 
 using namespace AVR;
 using namespace std;
@@ -35,7 +36,7 @@ cl_kernel generateKenrel;
 
 /**
   This function initializes OpenCL context and command queue for each device
-  available on the first platform returned by clGetPlatformIDs.
+  available on the first platform returned by cl::Platform::get.
   
   Results are placed in global objects context and queues.
   */
@@ -82,15 +83,24 @@ void initCL()
 		throw runtime_error("No GPU devices found on this platform");
 	}
 	cout << "OpenCL devices on this platform:" << endl;
-	string devName;
-	for(cl::Device &dev : devices) {
+	string devName, vendorName, devVersion, drvVersion;
+	for(int i=0; i<devices.size(); i++) {
+		cl::Device& dev = devices[i];
+		dev.getInfo(CL_DEVICE_VENDOR, &vendorName);
 		dev.getInfo(CL_DEVICE_NAME, &devName);
-		cout << devName << endl;
+		dev.getInfo(CL_DEVICE_VERSION, &devVersion);
+		dev.getInfo(CL_DRIVER_VERSION, &drvVersion);
+		cout << "Device " << i << endl;
+		cout << "---------------------------------" << endl;
+		cout << "Vendor:\t\t" << vendorName << endl;
+		cout << "Name:\t\t" << devName    << endl;
+		cout << "Device version:\t" << devVersion << endl;
+		cout << "Driver version:\t" << drvVersion << endl;
 	}
 	
 	cl_context_properties cps[] = {
-	        CL_CONTEXT_PLATFORM, (cl_context_properties)(platform()),
-	        0
+		CL_CONTEXT_PLATFORM, (cl_context_properties)(platform()),
+		0
 	};
 	context = cl::Context(CL_DEVICE_TYPE_GPU, cps);
 	
@@ -102,9 +112,10 @@ void initCL()
 
 void initKernels()
 {
-	
-	string utilSource = readSource(utilKernelPath);
-	cl::Program utilProgram(context, utilSource, true);
-	
-	memSetKernel = cl::Kernel(utilProgram, "memSet");
+	try {
+		cl::Program utilProgram = buildProgram(utilKernelPath, context);
+		memSetKernel = cl::Kernel(utilProgram, "memSet");
+	} catch (BuildError &e) {
+		cerr << e.log() << endl;
+	}
 }
