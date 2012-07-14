@@ -1,22 +1,32 @@
 #include <stdexcept>
 #include <iostream>
 #include <vector>
-#include <CL/cl.h>
 #include <avr/avr++.h>
 #include "util.h"
+
+#define __CL_ENABLE_EXCEPTIONS
+#include <CL/cl.hpp>
 
 using namespace AVR;
 using namespace std;
 
-cl_context context;
-vector<cl_command_queue> queues;
+cl_context context_;
+cl::Context context;
+vector<cl::CommandQueue> queues;
 
 
 static const string
-marchingCubesKernelPath = "kernels/marching_cubes.cl";
+blobValueKernelPath = "kernels/marching_cubes.cl";
 
 static const string
-scanKernelPath = "kernel/scan.cl";
+scanKernelPath = "kernels/scan.cl";
+
+static const string
+utilKernelPath = "kernels/util.cl";
+
+static const string
+memSetKernelName = "memSet";
+cl::Kernel memSetKernel;
 
 cl_kernel blobValueKernel;
 cl_kernel scanKernel;
@@ -41,8 +51,14 @@ int main()
 	try {
 		initCL();
 		initKernels();
+	} catch ( cl::Error &e ) {
+		cerr 
+		  << "OpenCL runtime error at function " << endl
+		  << e.what() << endl
+		  << "Error code: "<< endl
+		  << errorString(e.err()) << endl;
 	} catch (runtime_error &e) {
-		cout << e.what();
+		cerr << e.what();
 		return 1;
 	}
 	return 0;
@@ -50,71 +66,45 @@ int main()
 
 void initCL()
 {
-	cl_int errorNum;
-	cl_platform_id platform;
-
-	//Get the number of platforms available
-	cl_uint platformCount;
-	errorNum = clGetPlatformIDs(0, NULL, &platformCount);
-	checkError(errorNum, CL_SUCCESS);
-	if(platformCount == 0) {
+	vector<cl::Platform> platforms;
+	cl::Platform::get(&platforms);
+	if( platforms.empty() ){
 		throw runtime_error("No OpenCL platforms found");
 	}
+	cl::Platform platform = platforms[0];
+	string platformName;
+	platform.getInfo(CL_PLATFORM_NAME, &platformName);
+	cout << "First OpenCL platform is: " << platformName << endl;
 	
-	//Get the firs platform
-	errorNum = clGetPlatformIDs(1, &platform, NULL);
-	checkError(errorNum, CL_SUCCESS);
-	
-	//Print platform name
-	char platformName[1024];
-	errorNum = clGetPlatformInfo(platform, CL_PLATFORM_NAME,
-	                             sizeof(platformName), platformName, NULL);
-	checkError(errorNum, CL_SUCCESS);
-	cout << "Found OpenCL platform: " << platformName << endl;
-	
-	//List and initialize devices
-	cl_uint deviceCount;
-	errorNum = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL,
-	                          &deviceCount);
-	checkError(errorNum, CL_SUCCESS);
-	if(deviceCount == 0) {
-		throw runtime_error("No GPU device found on this platform");
+	vector<cl::Device> devices;
+	platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
+	if(devices.empty()) {
+		throw runtime_error("No GPU devices found on this platform");
 	}
-	cl_device_id* devices = new cl_device_id[deviceCount];
-	errorNum = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, deviceCount,
-	                          devices, NULL);
-	checkError(errorNum, CL_SUCCESS);
-	
-	char nameBuf[2048];
-	for(int i=0; i<deviceCount; i++) {
-		errorNum = clGetDeviceInfo(devices[i], CL_DEVICE_NAME,
-		                           sizeof(nameBuf), nameBuf, NULL);
-		checkError(errorNum, CL_SUCCESS);
-		
-		cout << "Found device " << i <<": " << nameBuf << endl;
+	cout << "OpenCL devices on this platform:" << endl;
+	string devName;
+	for(cl::Device &dev : devices) {
+		dev.getInfo(CL_DEVICE_NAME, &devName);
+		cout << devName << endl;
 	}
 	
-	//initialize context
-	cl_context_properties props[] = {
-	        CL_CONTEXT_PLATFORM, (cl_context_properties) platform,
+	cl_context_properties cps[] = {
+	        CL_CONTEXT_PLATFORM, (cl_context_properties)(platform()),
 	        0
 	};
-	context = clCreateContextFromType(props, CL_DEVICE_TYPE_GPU, NULL, 
-	                                  NULL, &errorNum);
-	checkError(errorNum, CL_SUCCESS);
+	context = cl::Context(CL_DEVICE_TYPE_GPU, cps);
 	
-	//initialize command queue for each device and put it in global object
-	for(int i=0; i<deviceCount; i++) {
-		cl_command_queue queue = clCreateCommandQueue(context, 
-		                                              devices[i], 0,
-		                                              &errorNum);
-		checkError(errorNum, CL_SUCCESS);
-		queues.push_back(queue);
+	for(cl::Device &dev : devices) {
+		cl::CommandQueue q(context, dev);
+		queues.push_back(q);
 	}
-	delete devices;
 }
 
 void initKernels()
 {
 	
+	string utilSource = readSource(utilKernelPath);
+	cl::Program utilProgram(context, utilSource, true);
+	
+	memSetKernel = cl::Kernel(utilProgram, "memSet");
 }

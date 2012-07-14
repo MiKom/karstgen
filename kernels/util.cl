@@ -1,6 +1,4 @@
 __kernel void memSet(float value, __global float *mem)
 {
-	for (int i=0; i<5; i++) {
-	
-	}
+	mem[get_global_id(0)] = value;
 }
