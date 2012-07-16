@@ -1,3 +1,4 @@
+#include "config.h"
 #include "util.h"
 #include <fstream>
 #include <sstream>
@@ -103,16 +104,9 @@ cl::Program buildProgram(const std::string& path, cl::Context& context)
 		program.build();
 	} catch (cl::Error& e) {
 		if(e.err() == CL_BUILD_PROGRAM_FAILURE ) {
-			ostringstream os;
-			os 
-			  << "Build of program "
-			  << path
-			  << " failed with following log: "
-			  << endl
-			  << buildLog(program);
-			throw BuildError(path, os.str());
+			throw BuildError(path, buildLog(program));
 		} else {
-			throw e;
+			throw;
 		}
 	}
 	return program;

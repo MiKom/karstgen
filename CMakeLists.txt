@@ -22,11 +22,18 @@ INCLUDE_DIRECTORIES( ${OPENCL_INCLUDE_DIRS} )
 INCLUDE_DIRECTORIES( "include/" )
 
 ADD_EXECUTABLE(karstgen
+	config.h
+
 	kernels/scan.cl
 	kernels/marching_cubes.cl
 	kernels/util.cl
 
+	kernels/blob.cl
+	blob.h
+	blob.cpp
+
 	karstgen.cpp
+	util.h
 	util.cpp
 )
 TARGET_LINK_LIBRARIES( karstgen ${OPENCL_LIBRARIES} )

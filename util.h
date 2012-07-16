@@ -3,14 +3,6 @@
 
 #include<cstdio>
 
-#if defined (__APPLE__) || defined(MACOSX)
-	#include <OpenCL/opencl.h>
-#else
-	#include <CL/opencl.h>
-#endif
-#define __CL_ENABLE_EXCEPTIONS
-#include<CL/cl.hpp>
-
 #include<string>
 #include<iostream>
 /** \file */

@@ -1,17 +1,14 @@
+#include "config.h"
 #include <stdexcept>
 #include <iostream>
 #include <vector>
 #include <avr/avr++.h>
-
-#define __CL_ENABLE_EXCEPTIONS
-#include <CL/cl.hpp>
 
 #include "util.h"
 
 using namespace AVR;
 using namespace std;
 
-cl_context context_;
 cl::Context context;
 vector<cl::CommandQueue> queues;
 
@@ -29,10 +26,10 @@ static const string
 memSetKernelName = "memSet";
 cl::Kernel memSetKernel;
 
-cl_kernel blobValueKernel;
-cl_kernel scanKernel;
-cl_kernel classifyVoxelKernel;
-cl_kernel generateKenrel;
+cl::Kernel blobValueKernel;
+cl::Kernel scanKernel;
+cl::Kernel classifyVoxelKernel;
+cl::Kernel generateKenrel;
 
 /**
   This function initializes OpenCL context and command queue for each device
@@ -116,6 +113,7 @@ void initKernels()
 		cl::Program utilProgram = buildProgram(utilKernelPath, context);
 		memSetKernel = cl::Kernel(utilProgram, "memSet");
 	} catch (BuildError &e) {
+		cerr << e.what() << endl;
 		cerr << e.log() << endl;
 	}
 }
