@@ -5,6 +5,7 @@
 #include <avr/avr++.h>
 
 #include "util.h"
+#include "blob.h"
 
 using namespace AVR;
 using namespace std;
@@ -26,7 +27,7 @@ static const string
 memSetKernelName = "memSet";
 cl::Kernel memSetKernel;
 
-cl::Kernel blobValueKernel;
+Blob* blobProgram;
 cl::Kernel scanKernel;
 cl::Kernel classifyVoxelKernel;
 cl::Kernel generateKenrel;
@@ -43,6 +44,10 @@ void initCL();
   This function initializes all kernels that are necessary for computation
   */
 void initKernels();
+
+/** This function cleans all kernel objects
+ */
+void cleanupKernels();
 
 int main()
 {
@@ -112,8 +117,14 @@ void initKernels()
 	try {
 		cl::Program utilProgram = buildProgram(utilKernelPath, context);
 		memSetKernel = cl::Kernel(utilProgram, "memSet");
+		blobProgram = new Blob(context);
 	} catch (BuildError &e) {
 		cerr << e.what() << endl;
 		cerr << e.log() << endl;
 	}
+}
+
+void cleanupKernels()
+{
+	delete blobProgram;
 }

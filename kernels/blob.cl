@@ -1,15 +1,16 @@
 struct blob_s {
-	cl_float3 pos;
-	cl_float magnitude;
+	float3 pos;
+	float magnitude;
 };
 typedef struct blob_s blob_t;
 
-__kernel
+__kernel void
 blobValue(
 	__global float* values,
-	__global float3 normals,
+	__global float3* normals,
+	float4 startPoint,
 	uint4 gridSize,
-	__constant blob_t blobs
+	__constant blob_t* blobs
 	)
 {
 
