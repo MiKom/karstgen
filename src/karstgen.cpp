@@ -5,6 +5,7 @@
 #include <avr/avr++.h>
 
 #include "util.h"
+#include "grid.h"
 #include "blob.h"
 
 using namespace AVR;

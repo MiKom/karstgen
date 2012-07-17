@@ -3,6 +3,8 @@
 
 #include "abstractprogram.h"
 
+class Grid;
+
 /**
   This structure holds definition of single blob in the scene.
   */
@@ -19,18 +21,17 @@ protected:
 public:
 	Blob(cl::Context& context);
 	
+	/**
+	  This method adds an array of blobs to the scalar field
+	  \param blobs array of blobs to be added
+	  \param nBlobs length of blobs array
+	  */
 	void runBlob(
 		blob_t* blobs,
 		int nBlobs,
-		cl::Buffer& val,
-		cl::Buffer& norm,
-		cl_int3 gridSize,
-		cl_float3 startPos
+		Grid& grid
 	);
 
 };
-
-void initBlob(cl::Context& context);
-
 
 #endif //__KARSTGEN_BLOB_H

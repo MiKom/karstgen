@@ -26,6 +26,9 @@ ADD_EXECUTABLE(karstgen
 	
 	src/abstractprogram.h
 	src/abstractprogram.cpp
+	
+	src/grid.h
+	src/grid.cpp
 
 	kernels/scan.cl
 	kernels/marching_cubes.cl
@@ -38,5 +41,7 @@ ADD_EXECUTABLE(karstgen
 	src/karstgen.cpp
 	src/util.h
 	src/util.cpp
+
+	src/math.h
 )
 TARGET_LINK_LIBRARIES( karstgen ${OPENCL_LIBRARIES} )
