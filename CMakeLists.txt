@@ -43,5 +43,6 @@ ADD_EXECUTABLE(karstgen
 	src/util.cpp
 
 	src/math.h
+	src/tables.h
 )
 TARGET_LINK_LIBRARIES( karstgen ${OPENCL_LIBRARIES} )
