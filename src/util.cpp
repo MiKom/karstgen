@@ -76,7 +76,7 @@ const string errorString(cl_int error)
 	};
 	const int numErrors = sizeof(errors) / sizeof(errors[0]);
 	const int idx = -error;
-	if(error >= 0 && error < numErrors) {
+	if(idx >= 0 && idx < numErrors) {
 		return errors[idx];
 	}  else {
 		return "Unknown Error";
