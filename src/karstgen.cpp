@@ -16,12 +16,6 @@ vector<cl::CommandQueue> queues;
 
 
 static const string
-blobValueKernelPath = "kernels/marching_cubes.cl";
-
-static const string
-scanKernelPath = "kernels/scan.cl";
-
-static const string
 utilKernelPath = "kernels/util.cl";
 
 static const string
@@ -29,9 +23,6 @@ memSetKernelName = "memSet";
 cl::Kernel memSetKernel;
 
 Blob* blobProgram;
-cl::Kernel scanKernel;
-cl::Kernel classifyVoxelKernel;
-cl::Kernel generateKenrel;
 
 /**
   This function initializes OpenCL context and command queue for each device
@@ -107,6 +98,7 @@ void initCL()
 	};
 	context = cl::Context(CL_DEVICE_TYPE_GPU, cps);
 	
+	
 	for(cl::Device &dev : devices) {
 		cl::CommandQueue q(context, dev);
 		queues.push_back(q);
@@ -118,7 +110,7 @@ void initKernels()
 	try {
 		cl::Program utilProgram = buildProgram(utilKernelPath, context);
 		memSetKernel = cl::Kernel(utilProgram, "memSet");
-		blobProgram = new Blob(context);
+		blobProgram = new Blob(context, queues);
 	} catch (BuildError &e) {
 		cerr << e.what() << endl;
 		cerr << e.log() << endl;

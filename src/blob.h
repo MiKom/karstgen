@@ -1,6 +1,8 @@
 #ifndef __KARSTGEN_BLOB_H
 #define __KARSTGEN_BLOB_H
 
+#include <vector>
+
 #include "abstractprogram.h"
 
 class Grid;
@@ -19,7 +21,8 @@ class Blob : public AbstractProgram
 protected:
 	cl::Kernel mBlobValKernel;
 public:
-	Blob(cl::Context& context);
+	Blob(cl::Context& context, std::vector<cl::CommandQueue> commandQueues);
+	virtual ~Blob() {}
 	
 	/**
 	  This method adds an array of blobs to the scalar field

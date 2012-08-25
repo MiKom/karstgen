@@ -5,8 +5,10 @@
 
 AbstractProgram::AbstractProgram(
 	const std::string& path,
-	cl::Context& context
+	cl::Context& context,
+	std::vector<cl::CommandQueue> commandQueues
 	)
 {
 	mProgram = buildProgram(path, context);
+	mCommandQueues = commandQueues;
 }
