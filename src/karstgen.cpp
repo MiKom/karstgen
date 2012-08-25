@@ -7,6 +7,7 @@
 #include "util.h"
 #include "grid.h"
 #include "blob.h"
+#include "marchingcubes.h"
 
 using namespace AVR;
 using namespace std;
@@ -23,6 +24,7 @@ memSetKernelName = "memSet";
 cl::Kernel memSetKernel;
 
 Blob* blobProgram;
+MarchingCubes* mcProgram;
 
 /**
   This function initializes OpenCL context and command queue for each device
@@ -111,6 +113,7 @@ void initKernels()
 		cl::Program utilProgram = buildProgram(utilKernelPath, context);
 		memSetKernel = cl::Kernel(utilProgram, "memSet");
 		blobProgram = new Blob(context, queues);
+		mcProgram = new MarchingCubes(context, queues);
 	} catch (BuildError &e) {
 		cerr << e.what() << endl;
 		cerr << e.log() << endl;
