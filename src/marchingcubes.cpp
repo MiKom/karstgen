@@ -10,12 +10,11 @@ static const string sPath = "kernels/marchingcubes.cl";
 //Kernel fucntions names
 static const char sClassifyVoxelFunc[] = "classifyVoxel";
 static const char sCompactVoxelsFunc[] = "compactVoxels";
-static const char sScanKernelFunc[] = "scan";
 static const char sGenerateTrianglesFunc[] = "generateTriangles";
 
 MarchingCubes::MarchingCubes(
-	cl::Context ctx,
-	vector<cl::CommandQueue> queues
+	const cl::Context ctx,
+	const vector<cl::CommandQueue>& queues
 ) : AbstractProgram(sPath, ctx, queues)
 {
 	mClassifyVoxelKernel = cl::Kernel(mProgram, sClassifyVoxelFunc);

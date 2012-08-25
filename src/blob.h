@@ -21,19 +21,23 @@ class Blob : public AbstractProgram
 protected:
 	cl::Kernel mBlobValKernel;
 public:
-	Blob(cl::Context& context, std::vector<cl::CommandQueue> commandQueues);
+	Blob(
+		const cl::Context& context, 
+		const std::vector<cl::CommandQueue>& commandQueues
+	);
 	virtual ~Blob() {}
 	
 	/**
 	  This method adds an array of blobs to the scalar field
 	  \param blobs array of blobs to be added
 	  \param nBlobs length of blobs array
+	  \param grid grid to which blob values will be added
 	  */
 	void runBlob(
-		blob_t* blobs,
+		const blob_t* const blobs,
 		int nBlobs,
 		Grid& grid
-	);
+	) const;
 
 };
 

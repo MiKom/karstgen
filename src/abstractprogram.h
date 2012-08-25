@@ -21,9 +21,9 @@ protected:
 	  \throws BuildError thrown at build errors
 	  */
 	AbstractProgram(
-	                const std::string& path,
-	                cl::Context& context,
-	                std::vector<cl::CommandQueue> queues
+		const std::string& path,
+		const cl::Context &context,
+		const std::vector<cl::CommandQueue>& queues
 	);
 public:
 	virtual ~AbstractProgram() { }

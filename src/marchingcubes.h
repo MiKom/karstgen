@@ -11,12 +11,11 @@ class MarchingCubes : public AbstractProgram
 protected:
 	cl::Kernel mClassifyVoxelKernel;
 	cl::Kernel mCompactVoxelsKernel;
-	cl::Kernel mScanKernel;
 	cl::Kernel mGenerateTrianglesKernel;
 public:
 	MarchingCubes(
-		cl::Context ctx,
-		std::vector<cl::CommandQueue> queues
+		const cl::Context ctx,
+		const std::vector<cl::CommandQueue> &queues
 	);
 	virtual ~MarchingCubes() {}
 
@@ -29,9 +28,9 @@ public:
 	  \param isoValue value that will be treated as a frontier of the
 	  surface
 	  \return vector of triangles. Each triangle is a triplet of vec3
-	  vectors
+	  vectors. The caller takes ownership of returned memory
 	*/
-	std::vector<vec3>* compute(const Grid& grid, const float& isoValue);
+	std::vector<vec3>* compute(const Grid& grid, float isoValue) const;
 };
 
 #endif

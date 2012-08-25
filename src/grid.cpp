@@ -4,7 +4,7 @@
 Grid::Grid(
 	const int3& gridSize,
 	const float3& startPos,
-	cl::Context& context
+	const cl::Context& context
 ) : 
 	mGridSize(gridSize),
 	mStartPos(startPos),

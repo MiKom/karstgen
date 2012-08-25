@@ -96,7 +96,7 @@ readSource(const string& filename)
 	return source; 
 }
 
-cl::Program buildProgram(const std::string& path, cl::Context& context)
+cl::Program buildProgram(const std::string& path, const cl::Context& context)
 {
 	string source = readSource(path);
 	cl::Program program (context, source);
