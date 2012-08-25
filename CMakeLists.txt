@@ -34,7 +34,10 @@ ADD_EXECUTABLE(karstgen
 	src/marchingcubes.cpp
 	kernels/marchingcubes.cl
 
+	src/scan.h
+	src/scan.cpp
 	kernels/scan.cl
+
 	kernels/util.cl
 
 	src/blob.h
