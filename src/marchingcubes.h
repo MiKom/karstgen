@@ -1,17 +1,28 @@
 #ifndef __KARSTGEN_MARCHINGCUBES_H__
 #define __KARSTGEN_MARCHINGCUBES_H__
 
-#include <CL/cl.hpp>
 #include "abstractprogram.h"
+#include "math.h"
 
-class vec3;
 class Grid;
+
+typedef struct {
+	std::vector<float3> *verts;
+	std::vector<float3> *normals;
+} MCMesh;
+
 class MarchingCubes : public AbstractProgram
 {
 protected:
+	
+	//kernels
 	cl::Kernel mClassifyVoxelKernel;
 	cl::Kernel mCompactVoxelsKernel;
 	cl::Kernel mGenerateTrianglesKernel;
+	
+	//textures with tables
+	cl::Image2D mTriangleTable;
+	cl::Image2D mNumVertsTable;
 public:
 	MarchingCubes(
 		const cl::Context ctx,
@@ -27,10 +38,10 @@ public:
 	  \param grid scalar field which describes isosurface
 	  \param isoValue value that will be treated as a frontier of the
 	  surface
-	  \return vector of triangles. Each triangle is a triplet of vec3
-	  vectors. The caller takes ownership of returned memory
+	  \return simple structure containing pointers to vector of vertices
+	  (triplets of coordinates) and normals (triplets of coordinates as well)
 	*/
-	std::vector<vec3>* compute(const Grid& grid, float isoValue) const;
+	MCMesh compute(const Grid& grid, float isoValue) const;
 };
 
 #endif
