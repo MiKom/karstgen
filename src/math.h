@@ -18,6 +18,7 @@ public:
 };
 typedef vec2<float> float2;
 typedef vec2<int> int2;
+typedef vec2<unsigned int> uint2;
 
 template<typename T>
 class vec4
@@ -39,8 +40,10 @@ public:
 };
 typedef vec4<float> float4;
 typedef vec4<int> int4;
+typedef vec4<unsigned int> uint4;
 
 typedef float4 float3;
 typedef int4 int3;
+typedef uint4 uint3;
 
 #endif

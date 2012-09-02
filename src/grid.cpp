@@ -2,7 +2,7 @@
 #include "grid.h"
 
 Grid::Grid(
-	const int3& gridSize,
+	const uint3& gridSize,
 	const float3& startPos,
 	const cl::Context& context
 ) : 
