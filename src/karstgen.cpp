@@ -7,6 +7,7 @@
 #include "util.h"
 #include "grid.h"
 #include "blob.h"
+#include "scan.h"
 #include "marchingcubes.h"
 
 using namespace AVR;
@@ -23,8 +24,9 @@ static const string
 memSetKernelName = "memSet";
 cl::Kernel memSetKernel;
 
-Blob* blobProgram;
-MarchingCubes* mcProgram;
+Blob *blobProgram;
+MarchingCubes *mcProgram;
+Scan *scanProgram;
 
 /**
   This function initializes OpenCL context and command queue for each device
@@ -113,7 +115,8 @@ void initKernels()
 		cl::Program utilProgram = buildProgram(utilKernelPath, context);
 		memSetKernel = cl::Kernel(utilProgram, "memSet");
 		blobProgram = new Blob(context, queues);
-		mcProgram = new MarchingCubes(context, queues);
+		scanProgram = new Scan(context, queues);
+		mcProgram = new MarchingCubes(context, queues, scanProgram);
 	} catch (BuildError &e) {
 		cerr << e.what() << endl;
 		cerr << e.log() << endl;
@@ -122,5 +125,7 @@ void initKernels()
 
 void cleanupKernels()
 {
+	delete mcProgram;
+	delete scanProgram;
 	delete blobProgram;
 }

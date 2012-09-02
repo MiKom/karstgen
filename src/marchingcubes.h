@@ -5,6 +5,7 @@
 #include "math.h"
 
 class Grid;
+class Scan;
 
 typedef struct {
 	std::vector<float3> *verts;
@@ -23,10 +24,16 @@ protected:
 	//textures with tables
 	cl::Image2D mTriangleTable;
 	cl::Image2D mNumVertsTable;
+	
+	Scan* mScanOp;
 public:
+	/**
+	  \param scan pointer to object storing initialized scan operator
+	*/
 	MarchingCubes(
 		const cl::Context ctx,
-		const std::vector<cl::CommandQueue> &queues
+		const std::vector<cl::CommandQueue> &queues,
+		Scan* scan
 	);
 	virtual ~MarchingCubes() {}
 

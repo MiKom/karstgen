@@ -11,6 +11,10 @@ protected:
 	cl::Kernel mUniformUpdate;
 	cl::Buffer mInternal;
 	
+	cl::CommandQueue mSelectedQueue; /**< Scan operation can be performed
+	                                      on only one command queue which
+	                                      is selected in constructor */
+	
 	static unsigned int iSnapUp(
 	                unsigned int dividend,
 	                unsigned int divisor);

@@ -15,8 +15,8 @@ static const char sGenerateTrianglesFunc[] = "generateTriangles";
 
 MarchingCubes::MarchingCubes(
 	const cl::Context ctx,
-	const vector<cl::CommandQueue>& queues
-) : AbstractProgram(sPath, ctx, queues)
+	const vector<cl::CommandQueue>& queues,
+	Scan *scan) : AbstractProgram(sPath, ctx, queues), mScanOp(scan)
 {
 	//initializing kernels
 	mClassifyVoxelKernel = cl::Kernel(mProgram, sClassifyVoxelFunc);
