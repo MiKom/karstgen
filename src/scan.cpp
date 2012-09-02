@@ -63,9 +63,9 @@ Scan::Scan(
 	}
 }
 
-void Scan::compute(cl::Buffer src, cl::Buffer dst) const
+void Scan::compute(cl::Buffer src, cl::Buffer dst, int size)
 {
-	//TODO: implement
+	scanExclusiveLarge(dst, src, 1, size);
 }
 
 unsigned int Scan::iSnapUp(unsigned int dividend, unsigned int divisor)

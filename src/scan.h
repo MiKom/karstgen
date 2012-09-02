@@ -53,7 +53,7 @@ public:
 	);
 	virtual ~Scan() {}
 	
-	void compute(cl::Buffer src, cl::Buffer dst) const;
+	void compute(cl::Buffer src, cl::Buffer dst, int size);
 };
 
 #endif // __KARSTGEN_SCAN_H__
