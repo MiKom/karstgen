@@ -2,11 +2,13 @@
 #include "grid.h"
 
 Grid::Grid(
-	const uint3& gridSize,
-	const float3& startPos,
-	const cl::Context& context
+	uint3 gridSize,
+	float3 gridDim,
+	float3 startPos,
+	cl::Context& context
 ) : 
 	mGridSize(gridSize),
+	mGridDim(gridDim),
 	mStartPos(startPos),
 	mContext(context)
 {
