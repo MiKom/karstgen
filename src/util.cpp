@@ -181,3 +181,25 @@ void run1DKernelMultipleQueues(
 		cl::Event::waitForEvents(waitEvents);
 	}
 }
+
+void run1DKernelSingleQueue(
+	const cl::Kernel &kernel,
+	const cl::CommandQueue &queue,
+	unsigned int globalSize,
+	unsigned int localSize,
+	bool synchronous,
+	const vector<cl::Event> *events)
+{
+	cl::Event event;
+	queue.enqueueNDRangeKernel(
+		kernel,
+		cl::NullRange,
+		cl::NDRange(globalSize),
+		(localSize > 0 ? cl::NDRange(localSize) : cl::NullRange),
+		events,
+		&event
+	);
+	if(synchronous) {
+		event.wait();
+	}
+}
