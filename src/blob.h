@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "abstractprogram.h"
+#include "math.h"
 
 class Grid;
 
@@ -11,8 +12,8 @@ class Grid;
   This structure holds definition of single blob in the scene.
   */
 struct blob_s {
-	cl_float4 pos;		//!< Position of the blob
-	cl_float magnitude;	//!< Magnitude, or how big should the blob be
+	float3 pos;		//!< Position of the blob
+	float magnitude;	//!< Magnitude, or how big should the blob be
 };
 typedef struct blob_s blob_t;
 
