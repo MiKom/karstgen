@@ -1,6 +1,8 @@
 #include "config.h"
 #include "tables.h"
 
+#include "util.h"
+#include "grid.h"
 #include "marchingcubes.h"
 
 using namespace std;
@@ -12,6 +14,13 @@ static const string sPath = "kernels/marchingcubes.cl";
 static const char sClassifyVoxelFunc[] = "classifyVoxel";
 static const char sCompactVoxelsFunc[] = "compactVoxels";
 static const char sGenerateTrianglesFunc[] = "generateTriangles";
+
+//Constants
+static const int CLASSIFY_VOXELS_THREADS_PER_WG = 128;
+static const bool CLASSIFY_VOXELS_USE_ALL_CARDS = true;
+
+static const int COMPACT_VOXELS_THREADS_PER_WG = 128;
+static const bool COMPACT_VOXELS_USE_ALL_CARDS = true;
 
 MarchingCubes::MarchingCubes(
 	const cl::Context ctx,
@@ -44,4 +53,93 @@ MarchingCubes::MarchingCubes(
 	                             (void*) mcNumVertsTable);
 }
 
+void MarchingCubes::launchClassifyVoxel(
+	Grid *grid,
+	cl::Buffer voxelVerts,
+	cl::Buffer voxelOccupied,
+	float isoValue
+)
+{
+	uint3 gridSize = grid->getGridSize();
+	unsigned int numVoxels = gridSize.x * gridSize.y * gridSize.z;
+	unsigned int i = 0;
+	mClassifyVoxelKernel.setArg(i++, grid->getValuesBuffer());
+	mClassifyVoxelKernel.setArg(i++, voxelVerts);
+	mClassifyVoxelKernel.setArg(i++, voxelOccupied);
+	mClassifyVoxelKernel.setArg(i++, grid->getGridSize());
+	mClassifyVoxelKernel.setArg(i++, grid->getVoxelSize());
+	mClassifyVoxelKernel.setArg(i++, isoValue);
+	mClassifyVoxelKernel.setArg(i++, numVoxels);
+	mClassifyVoxelKernel.setArg(i++, mNumVertsTable);
 
+	if(CLASSIFY_VOXELS_USE_ALL_CARDS) {
+		run1DKernelMultipleQueues(
+			mClassifyVoxelKernel,
+			mCommandQueues,
+			numVoxels,
+			CLASSIFY_VOXELS_THREADS_PER_WG
+		);
+	} else {
+		run1DKernelSingleQueue(
+			mClassifyVoxelKernel,
+			mCommandQueues[0],
+			numVoxels,
+			CLASSIFY_VOXELS_THREADS_PER_WG
+		);
+	}
+}
+
+void MarchingCubes::launchCompactVoxels(
+	cl::Buffer compVoxelArray,
+	cl::Buffer voxelOccupied,
+	cl::Buffer voxelOccupiedScan,
+	unsigned int numVoxels)
+{
+	int i=0;
+	mCompactVoxelsKernel.setArg(i++, compVoxelArray);
+	mCompactVoxelsKernel.setArg(i++, voxelOccupied);
+	mCompactVoxelsKernel.setArg(i++, voxelOccupiedScan);
+	mCompactVoxelsKernel.setArg(i++, numVoxels);
+	
+	if(COMPACT_VOXELS_USE_ALL_CARDS) {
+		run1DKernelMultipleQueues(
+			mCompactVoxelsKernel,
+			mCommandQueues,
+			numVoxels,
+			COMPACT_VOXELS_THREADS_PER_WG
+		);
+	} else {
+		run1DKernelSingleQueue(
+			mCompactVoxelsKernel,
+			mCommandQueues[0],
+			numVoxels,
+			COMPACT_VOXELS_THREADS_PER_WG
+		);
+	}
+}
+
+void MarchingCubes::launchgenerateTriangles(
+	cl::Buffer pos,
+	cl::Buffer norm,
+	cl::Buffer compVoxelArray,
+	cl::Buffer numVertsScanned,
+	float isoValue,
+	unsigned int activeVoxels,
+	unsigned int maxVerts,
+	Grid *grid)
+{
+	int i=0;
+	mGenerateTrianglesKernel.setArg(i++, pos);
+	mGenerateTrianglesKernel.setArg(i++, norm);
+	mGenerateTrianglesKernel.setArg(i++, grid->getValuesBuffer());
+	mGenerateTrianglesKernel.setArg(i++, grid->getNormalsBuffer());
+	mGenerateTrianglesKernel.setArg(i++, compVoxelArray);
+	mGenerateTrianglesKernel.setArg(i++, numVertsScanned);
+	mGenerateTrianglesKernel.setArg(i++, grid->getGridSize());
+	mGenerateTrianglesKernel.setArg(i++, grid->getVoxelSize());
+	mGenerateTrianglesKernel.setArg(i++, isoValue);
+	mGenerateTrianglesKernel.setArg(i++, activeVoxels);
+	mGenerateTrianglesKernel.setArg(i++, maxVerts);
+	mGenerateTrianglesKernel.setArg(i++, mNumVertsTable);
+	mGenerateTrianglesKernel.setArg(i++, mTriangleTable);
+}

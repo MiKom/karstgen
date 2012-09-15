@@ -26,6 +26,31 @@ protected:
 	cl::Image2D mNumVertsTable;
 	
 	Scan* mScanOp;
+	
+	void launchClassifyVoxel(
+		Grid* grid,
+		cl::Buffer voxelVerts,
+		cl::Buffer voxelOccupied,
+		float isoValue
+	);
+	
+	void launchCompactVoxels(
+		cl::Buffer compVoxelArray,
+		cl::Buffer voxelOccupied,
+		cl::Buffer voxelOccupiedScan,
+		unsigned int numVoxels
+	);
+	
+	void launchgenerateTriangles(
+		cl::Buffer pos,
+		cl::Buffer norm,
+		cl::Buffer compVoxelArray,
+		cl::Buffer numVertsScanned, 
+		float isoValue,
+		unsigned int activeVoxels,
+		unsigned int maxVerts,
+		Grid* grid
+	);
 public:
 	/**
 	  \param scan pointer to object storing initialized scan operator
