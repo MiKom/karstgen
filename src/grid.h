@@ -13,9 +13,7 @@ protected:
 	                   in each dimension. For example, for a grid made of
 	                   two small cuboids in x, three in y and four in z pass
 	                   (2,3,4) */
-	float3 mGridDim; /**< Dimension of the grid, i.e. how much space in each
-	                   dimension the whole grid occupies. For cubical grid,
-	                   every dimension has to have the same length */
+	float3 mVoxelSize; /**< Size of the single voxel */
 	float3 mStartPos;
 public:
 	Grid(
@@ -27,7 +25,7 @@ public:
 	
 	uint3 getGridSize() const { return mGridSize; }
 	float3 getStartPos() const { return mStartPos; }
-	float3 getGridDim() const { return mGridDim; }
+	float3 getVoxelSize() const { return mVoxelSize; }
 	void setStartPos(const float3& pos) { mStartPos = pos; }
 	cl::Buffer getValuesBuffer() const { return mValues; }
 	cl::Buffer getNormalsBuffer() const { return mNormals; }

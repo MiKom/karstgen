@@ -58,7 +58,57 @@ cl_int buildStatus(const cl::Program& program);
   */
 std::string buildLog(const cl::Program& program);
 
-inline void 
+/**
+  This function runs 1D kernel by splitting the workload evenly on all provided
+  command queues. All command queues must be in the same context.
+  \warning Pass only kernels that are fully initialized ant their parameters are
+  properly set, and valid (e.g. respective data is copied to the context etc.)
+  
+  \param kernel A 1D kernel to be executed The kernel
+  \param queues vector of comman queues on which the work will be executed
+  \param globalSize size of the work to be done
+  \param localSize size of the single work group. If 0 is passed then
+         cl::NullRange will be used
+  \param synchronous if true, function will not return until all work has been
+         done
+  \param event list of events that will be completed before anything will be
+         enqueued
+  */
+void run1DKernelMultipleQueues(
+	const cl::Kernel& kernel,
+	const std::vector<cl::CommandQueue>& queues,
+	unsigned int globalSize,
+	unsigned int localSize = 0,
+	bool synchronous = false,
+	const std::vector<cl::Event>* events = NULL
+);
+
+
+/**
+  Run 1D kernel on single command queue.
+  \warning Pass only kernels that are fully initialized ant their parameters are
+  properly set, and valid (e.g. respective data is copied to the context etc.)
+  
+  \param param kernel A 1D kernel to be executed The kernel
+  \param queue command queue, on which the kernel will be queued
+  \param globalSize size of the work to be done
+  \param localSize size of the single work group. If 0 is passed then
+         cl::NullRange will be used
+  \param synchronous if true, function will not return until all work has been
+         done
+  \param event list of events that will be completed before anything will be
+         enqueued
+  */
+void run1DKernelSingleQueue(
+	const cl::Kernel& kernel,
+	const cl::CommandQueue& queue,
+	unsigned int globalSize,
+	unsigned int localSize = 0,
+	bool synchronous = false,
+	const std::vector<cl::Event>* events = NULL
+);
+
+inline void
 __checkError(cl_int sample, cl_int reference, const char* filename, const int line)
 {
 	if(reference != sample) {

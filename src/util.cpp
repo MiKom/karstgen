@@ -143,3 +143,63 @@ string buildLog(const cl::Program& program)
 	}
 	return os.str();
 }
+
+void run1DKernelMultipleQueues(
+	const cl::Kernel &kernel,
+	const std::vector<cl::CommandQueue> &queues,
+	unsigned int globalSize,
+	unsigned int localSize,
+	bool synchronous,
+	const std::vector<cl::Event>* events)
+{
+	unsigned int devSize = globalSize / queues.size();
+	vector<cl::Event> waitEvents;
+	for(int i=0; i < queues.size(); i++) {
+		const cl::CommandQueue& queue = queues[i];
+		cl::Event event;
+		
+		bool lastQueue = false;
+		//Check if it's last queue. It may have more work if globalSize
+		//was not evenly divisable by number of queues
+		if(i == (queues.size() - 1) ){
+			lastQueue = true;
+		}
+		queue.enqueueNDRangeKernel(
+			kernel,
+			cl::NDRange(devSize * i),
+			(lastQueue ?
+				cl::NDRange(globalSize - (devSize * i)) :
+				cl::NDRange(devSize)
+			),
+			(localSize > 0 ? cl::NDRange(localSize) : cl::NullRange),
+			events,
+			&event
+		);
+		waitEvents.push_back(event);
+	}
+	if(synchronous) {
+		cl::Event::waitForEvents(waitEvents);
+	}
+}
+
+void run1DKernelSingleQueue(
+	const cl::Kernel &kernel,
+	const cl::CommandQueue &queue,
+	unsigned int globalSize,
+	unsigned int localSize,
+	bool synchronous,
+	const vector<cl::Event> *events)
+{
+	cl::Event event;
+	queue.enqueueNDRangeKernel(
+		kernel,
+		cl::NullRange,
+		cl::NDRange(globalSize),
+		(localSize > 0 ? cl::NDRange(localSize) : cl::NullRange),
+		events,
+		&event
+	);
+	if(synchronous) {
+		event.wait();
+	}
+}

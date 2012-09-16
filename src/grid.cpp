@@ -3,12 +3,12 @@
 
 Grid::Grid(
 	uint3 gridSize,
-	float3 gridDim,
+	float3 voxelSize,
 	float3 startPos,
 	cl::Context& context
 ) : 
 	mGridSize(gridSize),
-	mGridDim(gridDim),
+	mVoxelSize(voxelSize),
 	mStartPos(startPos),
 	mContext(context)
 {
