@@ -28,7 +28,7 @@ protected:
 	Scan* mScanOp;
 	
 	void launchClassifyVoxel(
-		Grid* grid,
+		const Grid& grid,
 		cl::Buffer voxelVerts,
 		cl::Buffer voxelOccupied,
 		float isoValue
@@ -49,7 +49,7 @@ protected:
 		float isoValue,
 		unsigned int activeVoxels,
 		unsigned int maxVerts,
-		Grid* grid
+		const Grid& grid
 	);
 public:
 	/**

@@ -54,20 +54,20 @@ MarchingCubes::MarchingCubes(
 }
 
 void MarchingCubes::launchClassifyVoxel(
-	Grid *grid,
+	const Grid& grid,
 	cl::Buffer voxelVerts,
 	cl::Buffer voxelOccupied,
 	float isoValue
 )
 {
-	uint3 gridSize = grid->getGridSize();
+	uint3 gridSize = grid.getGridSize();
 	unsigned int numVoxels = gridSize.x * gridSize.y * gridSize.z;
 	unsigned int i = 0;
-	mClassifyVoxelKernel.setArg(i++, grid->getValuesBuffer());
+	mClassifyVoxelKernel.setArg(i++, grid.getValuesBuffer());
 	mClassifyVoxelKernel.setArg(i++, voxelVerts);
 	mClassifyVoxelKernel.setArg(i++, voxelOccupied);
-	mClassifyVoxelKernel.setArg(i++, grid->getGridSize());
-	mClassifyVoxelKernel.setArg(i++, grid->getVoxelSize());
+	mClassifyVoxelKernel.setArg(i++, grid.getGridSize());
+	mClassifyVoxelKernel.setArg(i++, grid.getVoxelSize());
 	mClassifyVoxelKernel.setArg(i++, isoValue);
 	mClassifyVoxelKernel.setArg(i++, numVoxels);
 	mClassifyVoxelKernel.setArg(i++, mNumVertsTable);
@@ -126,17 +126,17 @@ void MarchingCubes::launchgenerateTriangles(
 	float isoValue,
 	unsigned int activeVoxels,
 	unsigned int maxVerts,
-	Grid *grid)
+	const Grid& grid)
 {
 	int i=0;
 	mGenerateTrianglesKernel.setArg(i++, pos);
 	mGenerateTrianglesKernel.setArg(i++, norm);
-	mGenerateTrianglesKernel.setArg(i++, grid->getValuesBuffer());
-	mGenerateTrianglesKernel.setArg(i++, grid->getNormalsBuffer());
+	mGenerateTrianglesKernel.setArg(i++, grid.getValuesBuffer());
+	mGenerateTrianglesKernel.setArg(i++, grid.getNormalsBuffer());
 	mGenerateTrianglesKernel.setArg(i++, compVoxelArray);
 	mGenerateTrianglesKernel.setArg(i++, numVertsScanned);
-	mGenerateTrianglesKernel.setArg(i++, grid->getGridSize());
-	mGenerateTrianglesKernel.setArg(i++, grid->getVoxelSize());
+	mGenerateTrianglesKernel.setArg(i++, grid.getGridSize());
+	mGenerateTrianglesKernel.setArg(i++, grid.getVoxelSize());
 	mGenerateTrianglesKernel.setArg(i++, isoValue);
 	mGenerateTrianglesKernel.setArg(i++, activeVoxels);
 	mGenerateTrianglesKernel.setArg(i++, maxVerts);
