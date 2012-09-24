@@ -41,10 +41,10 @@ Scan::Scan(
 		cl::Device dev;
 		q.getInfo(CL_QUEUE_DEVICE, &dev);
 		
-        size_t scanExclusiveLocal1WGSize =
-            mScanExclusiveLocal1.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(dev);
+		size_t scanExclusiveLocal1WGSize =
+			mScanExclusiveLocal1.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(dev);
 		size_t scanExclusiveLocal2WGSize =
-            mScanExclusiveLocal2.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(dev);
+			mScanExclusiveLocal2.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(dev);
 		size_t uniformUpdateWGSize = 
 			mUniformUpdate.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(dev);
 		
