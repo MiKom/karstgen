@@ -132,7 +132,6 @@ void MarchingCubes::launchgenerateTriangles(
 	mGenerateTrianglesKernel.setArg(i++, pos);
 	mGenerateTrianglesKernel.setArg(i++, norm);
 	mGenerateTrianglesKernel.setArg(i++, grid.getValuesBuffer());
-	mGenerateTrianglesKernel.setArg(i++, grid.getNormalsBuffer());
 	mGenerateTrianglesKernel.setArg(i++, compVoxelArray);
 	mGenerateTrianglesKernel.setArg(i++, numVertsScanned);
 	mGenerateTrianglesKernel.setArg(i++, grid.getGridSize());
