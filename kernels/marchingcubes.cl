@@ -1,7 +1,7 @@
 __kernel
 void classifyVoxel(
 	__global float *gridValues,
-	__global uint* voxelVerts,
+	__global uint *voxelVerts,
 	__global uint *voxelOccupied,
 	uint4 gridSize,
 	float4 voxelSize,
@@ -28,7 +28,6 @@ void generateTriangles(
 	__global float4 *pos,
 	__global float4 *norm,
 	__global float4 *gridValues,
-	__global float4 *gridNormals,
 	__global uint *compactedVoxelArray,
 	__global uint *numVertsScanned,
 	uint4 gridSize,
