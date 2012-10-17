@@ -41,7 +41,7 @@ protected:
 		unsigned int numVoxels
 	);
 	
-	void launchgenerateTriangles(
+	void launchGenerateTriangles(
 		cl::Buffer pos,
 		cl::Buffer norm,
 		cl::Buffer compVoxelArray,
@@ -73,7 +73,7 @@ public:
 	  \return simple structure containing pointers to vector of vertices
 	  (triplets of coordinates) and normals (triplets of coordinates as well)
 	*/
-	MCMesh compute(const Grid& grid, float isoValue) const;
+	MCMesh compute(Grid &grid, float isoValue);
 };
 
 #endif

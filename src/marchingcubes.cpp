@@ -3,6 +3,7 @@
 
 #include "util.h"
 #include "grid.h"
+#include "scan.h"
 #include "marchingcubes.h"
 
 using namespace std;
@@ -118,7 +119,7 @@ void MarchingCubes::launchCompactVoxels(
 	}
 }
 
-void MarchingCubes::launchgenerateTriangles(
+void MarchingCubes::launchGenerateTriangles(
 	cl::Buffer pos,
 	cl::Buffer norm,
 	cl::Buffer compVoxelArray,
@@ -141,4 +142,26 @@ void MarchingCubes::launchgenerateTriangles(
 	mGenerateTrianglesKernel.setArg(i++, maxVerts);
 	mGenerateTrianglesKernel.setArg(i++, mNumVertsTable);
 	mGenerateTrianglesKernel.setArg(i++, mTriangleTable);
+}
+
+MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
+{
+	grid.copyToDevice();
+	uint3 gridSize = grid.getGridSize();
+	
+	unsigned int numVoxels = gridSize.x * gridSize.y * gridSize.z;
+	cl::Buffer voxelVerts = cl::Buffer(
+		mContext, CL_MEM_WRITE_ONLY, sizeof(cl_uint) * numVoxels);
+	
+	cl::Buffer voxelOccupied = cl::Buffer(
+		mContext, CL_MEM_WRITE_ONLY, sizeof(cl_uint) * numVoxels);
+	
+	launchClassifyVoxel(grid, voxelVerts, voxelOccupied, isoValue);
+	
+	grid.copyToHost();
+	
+	cl::Buffer voxelOccupiedScan = cl::Buffer(
+		mContext, CL_MEM_WRITE_ONLY, sizeof(cl_uint) * numVoxels);
+	mScanOp->compute(voxelOccupied, voxelOccupiedScan, numVoxels);
+	//TODO: implement rest
 }
