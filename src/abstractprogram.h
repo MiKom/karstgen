@@ -9,6 +9,7 @@
   */
 class AbstractProgram {
 protected:
+	cl::Context mContext;
 	cl::Program mProgram;
 	std::vector<cl::CommandQueue> mCommandQueues;
 	/**
