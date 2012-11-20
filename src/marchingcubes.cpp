@@ -146,6 +146,7 @@ void MarchingCubes::launchGenerateTriangles(
 
 MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 {
+	MCMesh ret = { NULL, NULL };
 	grid.copyToDevice();
 	uint3 gridSize = grid.getGridSize();
 	
@@ -163,5 +164,32 @@ MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 	cl::Buffer voxelOccupiedScan = cl::Buffer(
 		mContext, CL_MEM_WRITE_ONLY, sizeof(cl_uint) * numVoxels);
 	mScanOp->compute(voxelOccupied, voxelOccupiedScan, numVoxels);
+	
+	uint lastElement, lastScanElement;
+	cl::CommandQueue q = mCommandQueues[0];
+	q.enqueueReadBuffer(
+		voxelOccupied,
+		CL_TRUE,
+		(numVoxels-1) * sizeof(uint),
+		sizeof(uint),
+		&lastElement
+	);
+	q.enqueueReadBuffer(
+		voxelOccupiedScan,
+		CL_TRUE,
+		(numVoxels-1) * sizeof(uint),
+		sizeof(uint),
+		&lastScanElement
+	);
+	int activeVoxels = lastElement + lastScanElement;
+	
+	cl::Buffer compactedVoxelArray = cl::Buffer(
+		mContext, CL_MEM_WRITE_ONLY, sizeof(uint) * activeVoxels);
+	launchCompactVoxels(compactedVoxelArray,
+		voxelOccupied, voxelOccupiedScan, numVoxels);
+	
+	cl::Buffer voxelVertsScan = cl::Buffer(mContext, CL_MEM_WRITE_ONLY,
+		sizeof(cl_uint) * numVoxels);
+	mScanOp->compute(voxelVerts, voxelVertsScan, numVoxels);
 	//TODO: implement rest
 }

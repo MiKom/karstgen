@@ -20,7 +20,10 @@ void compactVoxels(
 	uint numVoxels
 )
 {
-//TODO: implement
+	uint i = get_global_id(0);
+	if(voxelOccupied[i] && (i < numVoxels)) {
+		compactedVoxelArray[voxelOccupiedScan[i]] = i;
+	}
 }
 
 __kernel
