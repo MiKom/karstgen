@@ -32,7 +32,7 @@ void generateTriangles(
 	__global float4 *norm,
 	__global float4 *gridValues,
 	__global uint *compactedVoxelArray,
-	__global uint *numVertsScanned,
+	__global uint *voxelVertsScanned,
 	uint4 gridSize,
 	float4 voxelSize,
 	float isoValue,
