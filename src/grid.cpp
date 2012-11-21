@@ -13,24 +13,26 @@ Grid::Grid(
 	mStartPos(startPos),
 	mContext(context),
 	mCommandQueue(cq),
-	mStorage(Storage::HOST)
-{
-	size_t len = (mGridDim.x + 1) * (mGridDim.y+1) * (mGridDim.z+1);
-	
-	mValues = new float4[len];
-}
+	mStorage(Storage::HOST),
+	mValues(new float4[getFlatDataSize(gridDim)])
+{}
 
 Grid::~Grid()
 {
 	delete[] mValues;
 }
 
+unsigned int
+Grid::getFlatDataSize(const uint3& gridDim)
+{
+	return (gridDim.x + 1) * (gridDim.y + 1) * (gridDim.z + 1);
+}
+
 void
 Grid::copyToDevice()
 {
 	if(mStorage != Storage::DEVICE) {
-		size_t len =(mGridDim.x + 1) * (mGridDim.y+1) * (mGridDim.z+1);
-		size_t dataSize = len * sizeof(cl_float4);
+		size_t dataSize = getFlatDataSize(mGridDim) * sizeof(cl_float4);
 		mValuesBuffer = cl::Buffer(mContext, CL_MEM_READ_WRITE,
 		                           dataSize);
 		mCommandQueue.enqueueWriteBuffer(mValuesBuffer, CL_TRUE,
@@ -46,8 +48,7 @@ void
 Grid::copyToHost()
 {
 	if(mStorage != Storage::HOST) {
-		size_t len =(mGridDim.x + 1) * (mGridDim.y+1) * (mGridDim.z+1);
-		size_t dataSize = len * sizeof(cl_float4);
+		size_t dataSize = getFlatDataSize(mGridDim) * sizeof(cl_float4);
 		mCommandQueue.enqueueReadBuffer(mValuesBuffer, CL_TRUE, 0,
 		                                dataSize, mValues);
 		//Losing reference to Device buffer so it can get deallocated

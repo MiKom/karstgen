@@ -14,7 +14,7 @@ class Grid
 public:
 	enum class Storage {
 		DEVICE, /**< Valid data is currently stored on the device
-		          (e.g. VRAM) associated with mContext */
+			     (e.g. VRAM) associated with mContext */
 		HOST /**< Valid data is currently stored in host (e.g. RAM) */
 	};
 protected:
@@ -30,6 +30,14 @@ protected:
 	float3 mStartPos;
 	
 	Storage mStorage;
+	
+	/**
+	  This function calculates the number of data point on the grid that
+	  will be needed to keep the grid data. Basically, for x*y*z sized grid
+	  (in voxels in each dimension) you need (x+1) * (y+1) * (z+1) data
+	  points. This is a utility function to compute that.
+	  */
+	static unsigned int getFlatDataSize(const uint3& gridDim);
 public:
 	/**
 	  \param context OpenCL context within which this grid will operate
@@ -44,6 +52,9 @@ public:
 		cl::Context &context,
 		cl::CommandQueue &cq
 	);
+	//Make grid noncopyable
+	Grid(const Grid& other) = delete;
+	Grid& operator=(const Grid& other) = delete;
 	virtual ~Grid();
 	
 	uint3 getGridSize() const { return mGridDim; }
