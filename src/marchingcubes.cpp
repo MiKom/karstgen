@@ -23,6 +23,9 @@ static const bool CLASSIFY_VOXELS_USE_ALL_CARDS = true;
 static const int COMPACT_VOXELS_THREADS_PER_WG = 128;
 static const bool COMPACT_VOXELS_USE_ALL_CARDS = true;
 
+static const int GENERATE_TRIANGLES_THREADS_PER_WG = 128;
+static const int GENERATE_TRIANGLES_USE_ALL_CARDS = true;
+
 MarchingCubes::MarchingCubes(
 	const cl::Context ctx,
 	const vector<cl::CommandQueue>& queues,
@@ -142,6 +145,7 @@ void MarchingCubes::launchGenerateTriangles(
 	mGenerateTrianglesKernel.setArg(i++, maxVerts);
 	mGenerateTrianglesKernel.setArg(i++, mNumVertsTable);
 	mGenerateTrianglesKernel.setArg(i++, mTriangleTable);
+	//TODO: impelement launching
 }
 
 MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
@@ -212,6 +216,20 @@ MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 	int totalVerts = lastElement + lastScanElement;
 	//this is not needed anymore
 	voxelVerts = cl::Buffer();
+	cl::Buffer normals = cl::Buffer(
+		mContext, CL_MEM_WRITE_ONLY, sizeof(cl_float4) * totalVerts);
+	cl::Buffer verts = cl::Buffer(
+		mContext, CL_MEM_WRITE_ONLY, sizeof(cl_float4) * totalVerts);
 	
-	//TODO: implement rest
+	launchGenerateTriangles(
+		verts,
+		normals,
+		compactedVoxelArray,
+		voxelVertsScan,
+		isoValue,
+		activeVoxels,
+		totalVerts,
+		grid
+	);
+	//TODO: implement copying to return structure
 }
