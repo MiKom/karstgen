@@ -8,8 +8,8 @@ class Grid;
 class Scan;
 
 typedef struct {
-	std::vector<float3> *verts;
-	std::vector<float3> *normals;
+	std::vector<float3> verts;
+	std::vector<float3> normals;
 } MCMesh;
 
 class MarchingCubes : public AbstractProgram

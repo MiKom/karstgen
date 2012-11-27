@@ -145,12 +145,27 @@ void MarchingCubes::launchGenerateTriangles(
 	mGenerateTrianglesKernel.setArg(i++, maxVerts);
 	mGenerateTrianglesKernel.setArg(i++, mNumVertsTable);
 	mGenerateTrianglesKernel.setArg(i++, mTriangleTable);
+	if(GENERATE_TRIANGLES_USE_ALL_CARDS) {
+		run1DKernelMultipleQueues(
+			mGenerateTrianglesKernel,
+			mCommandQueues,
+			activeVoxels,
+			GENERATE_TRIANGLES_THREADS_PER_WG
+		);
+	} else {
+		run1DKernelSingleQueue(
+			mCompactVoxelsKernel,
+			mCommandQueues[0],
+			activeVoxels,
+			GENERATE_TRIANGLES_THREADS_PER_WG
+		);
+	}
 	//TODO: impelement launching
 }
 
 MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 {
-	MCMesh ret = { new vector<float3>(), new vector<float3>()};
+	MCMesh ret = { vector<float3>(), vector<float3>()};
 	grid.copyToDevice();
 	uint3 gridSize = grid.getGridSize();
 	

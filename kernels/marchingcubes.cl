@@ -1,3 +1,14 @@
+uint4 calcGridPos(uint i, uint4 gridSize)
+{
+	uint z = i / (gridSize.x * gridSize.y)
+	i -= z * (gridSize.x * gridSize.y);
+	uint y = i / gridSize.x
+	i -= y * gridSize.x;
+	uint x = i
+	
+	return (uint4) (x, y, z, 0);
+}
+
 __kernel
 void classifyVoxel(
 	__global float *gridValues,
@@ -9,7 +20,7 @@ void classifyVoxel(
 	uint numVoxels,
 	__read_only image2d_t numVertsTex)
 {
-//TODO: implement
+	
 }
 
 __kernel
