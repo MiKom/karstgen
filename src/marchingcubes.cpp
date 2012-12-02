@@ -140,6 +140,7 @@ void MarchingCubes::launchGenerateTriangles(
 	mGenerateTrianglesKernel.setArg(i++, numVertsScanned);
 	mGenerateTrianglesKernel.setArg(i++, grid.getGridSize());
 	mGenerateTrianglesKernel.setArg(i++, grid.getVoxelSize());
+	mGenerateTrianglesKernel.setArg(i++, grid.getStartPos());
 	mGenerateTrianglesKernel.setArg(i++, isoValue);
 	mGenerateTrianglesKernel.setArg(i++, activeVoxels);
 	mGenerateTrianglesKernel.setArg(i++, maxVerts);
@@ -160,7 +161,6 @@ void MarchingCubes::launchGenerateTriangles(
 			GENERATE_TRIANGLES_THREADS_PER_WG
 		);
 	}
-	//TODO: impelement launching
 }
 
 MCMesh MarchingCubes::compute(Grid &grid, float isoValue)

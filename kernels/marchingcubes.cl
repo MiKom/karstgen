@@ -93,6 +93,7 @@ void generateTriangles(
 	__global uint *voxelVertsScanned,
 	uint4 gridSize,
 	float4 voxelSize,
+	float4 startPoint,
 	float isoValue,
 	uint activeVoxels,
 	uint maxVerts,
