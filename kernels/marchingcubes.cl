@@ -105,10 +105,10 @@ void generateTriangles(
 	uint tid = get_local_id(0);
 	
 	if(i > activeVoxels - 1) {
-		i = activeVoxel - 1;
+		i = activeVoxels - 1;
 	}
 	
 	uint voxel = compactedVoxelArray[i];
 	
-	int4 gridPos = calcGridPos(voxel, gridSize);
+	uint4 gridPos = calcGridPos(voxel, gridSize);
 }
