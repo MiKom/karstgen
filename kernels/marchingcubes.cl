@@ -1,13 +1,13 @@
 typedef unsigned int uint;
-sampler_t tableSampler = CLK_NORMALIZED_COORS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
+sampler_t tableSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
 uint4 calcGridPos(uint i, uint4 gridSize)
 {
-	uint z = i / (gridSize.x * gridSize.y)
+	uint z = i / (gridSize.x * gridSize.y);
 	i -= z * (gridSize.x * gridSize.y);
-	uint y = i / gridSize.x
+	uint y = i / gridSize.x;
 	i -= y * gridSize.x;
-	uint x = i
+	uint x = i;
 	
 	return (uint4) (x, y, z, 0);
 }
@@ -17,7 +17,7 @@ uint calcFlatPos(uint4 gridPos, uint4 gridSize)
 	uint position = 0;
 	position += gridPos.z * gridSize.x * gridSize.y;
 	position += gridPos.y * gridSize.x;
-	position += gridPos.x
+	position += gridPos.x;
 	return position;
 }
 
@@ -32,7 +32,7 @@ void classifyVoxel(
 	uint numVoxels,
 	__read_only image2d_t numVertsTex)
 {
-	int4 dataGridSize = gridSize + (uint4) (1,1,1,0);
+	uint4 dataGridSize = gridSize + (uint4) (1,1,1,0);
 	
 	uint i = get_global_id(0);
 	uint4 voxelGridPos = calcGridPos(i, gridSize);
@@ -63,7 +63,7 @@ void classifyVoxel(
 	vertexIndex = (calcFlatPos(voxelGridPos + (uint4)(0,1,1,0), dataGridSize));
 	cubeIndex += (gridValues[vertexIndex] < isoValue) << 7;
 	
-	uint numVerts = read_imagui(numVertsTex, tableSampler, (int2)(cubeIndex, 0).x;
+	uint numVerts = read_imageui(numVertsTex, tableSampler, (int2)(cubeIndex, 0)).x;
 	if (i < numVoxels) {
 		voxelVerts[i] = numVerts;
 		voxelOccupied[i] = (numVerts > 0);
@@ -93,6 +93,7 @@ void generateTriangles(
 	__global uint *voxelVertsScanned,
 	uint4 gridSize,
 	float4 voxelSize,
+	float4 startPoint,
 	float isoValue,
 	uint activeVoxels,
 	uint maxVerts,
