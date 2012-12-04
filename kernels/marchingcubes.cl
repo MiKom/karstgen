@@ -100,5 +100,14 @@ void generateTriangles(
 	__read_only image2d_t triTex
 )
 {
-//TODO: implement
+	uint i = get_global_id(0);
+	uint tid = get_local_id(0);
+	
+	if(i > activeVoxels - 1) {
+		i = activeVoxel - 1;
+	}
+	
+	uint voxel = compactedVoxelArray[i];
+	
+	int4 gridPos = calcGridPos(voxel, gridSize);
 }
