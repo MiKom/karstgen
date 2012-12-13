@@ -21,6 +21,38 @@ uint calcFlatPos(uint4 gridPos, uint4 gridSize)
 	return position;
 }
 
+void getCubeValues(
+	uint4 voxelPos,
+	__global *gridValues,
+	uint4 dataGridSize,
+	float *values)
+{
+	int vertexIndex;
+	vertexIndex = calcFlatPos(voxelPos, dataGridSize);
+	values[0] = gridValues[vertexIndex];
+
+	vertexIndex = (calcFlatPos(voxelPos + (uint4)(1,0,0,0), dataGridSize));
+	values[1] = gridValues[vertexIndex];
+
+	vertexIndex = (calcFlatPos(voxelPos + (uint4)(1,1,0,0), dataGridSize));
+	values[2] = gridValues[vertexIndex];
+
+	vertexIndex = (calcFlatPos(voxelPos + (uint4)(0,1,0,0), dataGridSize));
+	values[3] = gridValues[vertexIndex];
+
+	vertexIndex = (calcFlatPos(voxelPos + (uint4)(0,0,1,0), dataGridSize));
+	values[4] = gridValues[vertexIndex];
+
+	vertexIndex = (calcFlatPos(voxelPos + (uint4)(1,0,1,0), dataGridSize));
+	values[5] = gridValues[vertexIndex];
+
+	vertexIndex = (calcFlatPos(voxelPos + (uint4)(1,1,1,0), dataGridSize));
+	values[6] = gridValues[vertexIndex];
+
+	vertexIndex = (calcFlatPos(voxelPos + (uint4)(0,1,1,0), dataGridSize));
+	values[7] = gridValues[vertexIndex];
+}
+
 __kernel
 void classifyVoxel(
 	__global float *gridValues,
@@ -36,32 +68,20 @@ void classifyVoxel(
 	
 	uint i = get_global_id(0);
 	uint4 voxelGridPos = calcGridPos(i, gridSize);
+	
+	float cubeValues[8];
+	getCubeValues(voxelGridPos, gridValues, dataGridSize, cubeValues);
+
+	//Loop unrolled for better performance
 	int cubeIndex;
-
-	int vertexIndex;
-	vertexIndex = calcFlatPos(voxelGridPos, dataGridSize);
-	cubeIndex = gridValues[vertexIndex] < isoValue;
-
-	vertexIndex = (calcFlatPos(voxelGridPos + (uint4)(1,0,0,0), dataGridSize));
-	cubeIndex += (gridValues[vertexIndex] < isoValue) << 1;
-
-	vertexIndex = (calcFlatPos(voxelGridPos + (uint4)(1,1,0,0), dataGridSize));
-	cubeIndex += (gridValues[vertexIndex] < isoValue) << 2;
-
-	vertexIndex = (calcFlatPos(voxelGridPos + (uint4)(0,1,0,0), dataGridSize));
-	cubeIndex += (gridValues[vertexIndex] < isoValue) << 3;
-
-	vertexIndex = (calcFlatPos(voxelGridPos + (uint4)(0,0,1,0), dataGridSize));
-	cubeIndex += (gridValues[vertexIndex] < isoValue) << 4;
-
-	vertexIndex = (calcFlatPos(voxelGridPos + (uint4)(1,0,1,0), dataGridSize));
-	cubeIndex += (gridValues[vertexIndex] < isoValue) << 5;
-
-	vertexIndex = (calcFlatPos(voxelGridPos + (uint4)(1,1,1,0), dataGridSize));
-	cubeIndex += (gridValues[vertexIndex] < isoValue) << 6;
-
-	vertexIndex = (calcFlatPos(voxelGridPos + (uint4)(0,1,1,0), dataGridSize));
-	cubeIndex += (gridValues[vertexIndex] < isoValue) << 7;
+	cubeIndex =  (cubeValues[0] < isoValue);
+	cubeIndex += (cubeValues[1] < isoValue) << 1;
+	cubeIndex += (cubeValues[2] < isoValue) << 2;
+	cubeIndex += (cubeValues[3] < isoValue) << 3;
+	cubeIndex += (cubeValues[4] < isoValue) << 4;
+	cubeIndex += (cubeValues[5] < isoValue) << 5;
+	cubeIndex += (cubeValues[6] < isoValue) << 6;
+	cubeIndex += (cubeValues[7] < isoValue) << 7;
 	
 	uint numVerts = read_imageui(numVertsTex, tableSampler, (int2)(cubeIndex, 0)).x;
 	if (i < numVoxels) {
@@ -111,4 +131,22 @@ void generateTriangles(
 	uint voxel = compactedVoxelArray[i];
 	
 	uint4 gridPos = calcGridPos(voxel, gridSize);
+	
+	float4 p;
+	p.x = startPoint.x + gridPos.x * voxelSize.x;
+	p.y = startPoint.y + gridPos.y * voxelSize.y;
+	p.z = startPoint.z + gridPos.z * voxelSize.z;
+	p.w = 1.0f;
+	
+	float4 verts[8];
+	verts[0] = p;
+	verts[1] = p + (float4)(voxelSize.x, 0, 0, 0);
+	verts[2] = p + (float4)(voxelSize.x, voxelSize.y, 0, 0);
+	verts[3] = p + (float4)(0, voxelSize.y, 0, 0);
+	verts[4] = p + (float4)(0, 0, voxelSize.z, 0);
+	verts[5] = p + (float4)(voxelSize.x, 0, voxelSize.z, 0);
+	verts[6] = p + (float4)(voxelSize.x, voxelSize.y, voxelSize.z, 0);
+	verts[7] = p + (float4)(0, voxelSize.y, voxelSize.z, 0);
+	
+	//TODO: implement
 }
