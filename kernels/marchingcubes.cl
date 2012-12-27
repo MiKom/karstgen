@@ -116,8 +116,8 @@ void vertexInterp(
 	float4 *norm)
 {
 	float t = (isoLevel - f1.w) / (f2.w - f1.w);
-	pos = mix(p1, p2, t);
-	norm = mix(f1, f2, t);
+	*pos = mix(p1, p2, t);
+	*norm = mix(f1, f2, t);
 }
 
 __kernel
@@ -164,8 +164,8 @@ void generateTriangles(
 	verts[6] = p + (float4)(voxelSize.x, voxelSize.y, voxelSize.z, 0);
 	verts[7] = p + (float4)(0, voxelSize.y, voxelSize.z, 0);
 	
-	__local float4 vertList[12*NTHREADS]
-	__local float4 normList[12*NTHREADS]
+	__local float4 vertList[12*NTHREADS];
+	__local float4 normList[12*NTHREADS];
 	
 	//TODO: implement
 }
