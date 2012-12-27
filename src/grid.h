@@ -6,7 +6,7 @@
 /**
   This class keeps values of computed density function and its normalsalong the
   grid of voxels. The returned buffer is float4 buffer that keeps normal in xyz
-  components, and density function value in z component. It can move data
+  components, and density function value in w component. It can move data
   between RAM and VRAM.
   */
 class Grid

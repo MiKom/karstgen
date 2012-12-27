@@ -1,3 +1,5 @@
+#define NTHREADS 32
+
 typedef unsigned int uint;
 sampler_t tableSampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
@@ -23,9 +25,9 @@ uint calcFlatPos(uint4 gridPos, uint4 gridSize)
 
 void getCubeValues(
 	uint4 voxelPos,
-	__global *gridValues,
+	__global float4 *gridValues,
 	uint4 dataGridSize,
-	float *values)
+	float4 *values)
 {
 	int vertexIndex;
 	vertexIndex = calcFlatPos(voxelPos, dataGridSize);
@@ -55,7 +57,7 @@ void getCubeValues(
 
 __kernel
 void classifyVoxel(
-	__global float *gridValues,
+	__global float4 *gridValues,
 	__global uint *voxelVerts,
 	__global uint *voxelOccupied,
 	uint4 gridSize,
@@ -69,19 +71,19 @@ void classifyVoxel(
 	uint i = get_global_id(0);
 	uint4 voxelGridPos = calcGridPos(i, gridSize);
 	
-	float cubeValues[8];
+	float4 cubeValues[8];
 	getCubeValues(voxelGridPos, gridValues, dataGridSize, cubeValues);
 
 	//Loop unrolled for better performance
 	int cubeIndex;
-	cubeIndex =  (cubeValues[0] < isoValue);
-	cubeIndex += (cubeValues[1] < isoValue) << 1;
-	cubeIndex += (cubeValues[2] < isoValue) << 2;
-	cubeIndex += (cubeValues[3] < isoValue) << 3;
-	cubeIndex += (cubeValues[4] < isoValue) << 4;
-	cubeIndex += (cubeValues[5] < isoValue) << 5;
-	cubeIndex += (cubeValues[6] < isoValue) << 6;
-	cubeIndex += (cubeValues[7] < isoValue) << 7;
+	cubeIndex =  (cubeValues[0].w < isoValue);
+	cubeIndex += (cubeValues[1].w < isoValue) << 1;
+	cubeIndex += (cubeValues[2].w < isoValue) << 2;
+	cubeIndex += (cubeValues[3].w < isoValue) << 3;
+	cubeIndex += (cubeValues[4].w < isoValue) << 4;
+	cubeIndex += (cubeValues[5].w < isoValue) << 5;
+	cubeIndex += (cubeValues[6].w < isoValue) << 6;
+	cubeIndex += (cubeValues[7].w < isoValue) << 7;
 	
 	uint numVerts = read_imageui(numVertsTex, tableSampler, (int2)(cubeIndex, 0)).x;
 	if (i < numVoxels) {
@@ -102,6 +104,20 @@ void compactVoxels(
 	if(voxelOccupied[i] && (i < numVoxels)) {
 		compactedVoxelArray[voxelOccupiedScan[i]] = i;
 	}
+}
+
+void vertexInterp(
+	float isoLevel,
+	float4 p1,
+	float4 p2,
+	float4 f1,
+	float4 f2,
+	float4 *pos,
+	float4 *norm)
+{
+	float t = (isoLevel - f1.w) / (f2.w - f1.w);
+	pos = mix(p1, p2, t);
+	norm = mix(f1, f2, t);
 }
 
 __kernel
@@ -147,6 +163,9 @@ void generateTriangles(
 	verts[5] = p + (float4)(voxelSize.x, 0, voxelSize.z, 0);
 	verts[6] = p + (float4)(voxelSize.x, voxelSize.y, voxelSize.z, 0);
 	verts[7] = p + (float4)(0, voxelSize.y, voxelSize.z, 0);
+	
+	__local float4 vertList[12*NTHREADS]
+	__local float4 normList[12*NTHREADS]
 	
 	//TODO: implement
 }
