@@ -192,7 +192,6 @@ void generateTriangles(
 	
 	int cubeIndex = getCubeIndex(cubeValues, isoValue);
 	uint numVerts = read_imageui(numVertsTex, tableSampler, (int2)(cubeIndex, 0)).x;
-	//TODO: implement
 	
 	for(int i=0; i<numVerts; i+=3) {
 		uint index = voxelVertsScanned[voxel] + i;
