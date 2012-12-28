@@ -65,3 +65,9 @@ ADD_EXECUTABLE(karstgen
 	src/tables.h
 )
 TARGET_LINK_LIBRARIES( karstgen ${OPENCL_LIBRARIES} )
+
+ENABLE_TESTING()
+
+ADD_EXECUTABLE(01_simpleBlob tests/01_simpleBlob.cpp)
+TARGET_LINK_LIBRARIES( 01_simpleBlob ${OPENCL_LIBRARIES} )
+ADD_TEST(NAME 01_simpleBlob COMMAND 01_simpleBlob)
