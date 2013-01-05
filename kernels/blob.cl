@@ -1,4 +1,6 @@
 #define EPSILON 0.0001
+#define DIV_EPSILON 0.000000001
+
 uint4 calcGridPos(uint i, uint4 gridSize)
 {
 	uint z = i / (gridSize.x * gridSize.y);
@@ -39,15 +41,17 @@ blobValue(
 	float4 blob;
 	float tmpVal;
 	float3 tmpNorm;
+	float denom;
 	for(int i=0; i<nBlobs; i++) {
 		blob = blobs[i];
-		tmpVal = blob.w / (pown(pos.x - blob.x, 2) + pown(pos.y - blob.y, 2) + pown(pos.z - blob.z, 2));
+		denom = 
+		tmpVal = blob.w / max((pown(pos.x - blob.x, 2) + pown(pos.y - blob.y, 2) + pown(pos.z - blob.z, 2)), DIV_EPSILON);
 		val += tmpVal;
 		
 		//Calculating normals for current blob
-		tmpNorm.x = blob.w / (pown((pos.x + EPSILON) - blob.x, 2) + pown(pos.y - blob.y, 2) + pown(pos.z - blob.z, 2));
-		tmpNorm.y = blob.w / (pown(pos.x - blob.x, 2) + pown((pos.y + EPSILON) - blob.y, 2) + pown(pos.z - blob.z, 2));
-		tmpNorm.z = blob.w / (pown(pos.x - blob.x, 2) + pown(pos.y - blob.y, 2) + pown((pos.z + EPSILON) - blob.z, 2));
+		tmpNorm.x = blob.w / max((pown((pos.x + EPSILON) - blob.x, 2) + pown(pos.y - blob.y, 2) + pown(pos.z - blob.z, 2)), DIV_EPSILON);
+		tmpNorm.y = blob.w / max((pown(pos.x - blob.x, 2) + pown((pos.y + EPSILON) - blob.y, 2) + pown(pos.z - blob.z, 2)), DIV_EPSILON);
+		tmpNorm.z = blob.w / max((pown(pos.x - blob.x, 2) + pown(pos.y - blob.y, 2) + pown((pos.z + EPSILON) - blob.z, 2)), DIV_EPSILON);
 		
 		norm += tmpNorm - (float3) (tmpVal, tmpVal, tmpVal);
 	}
