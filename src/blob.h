@@ -8,15 +8,6 @@
 
 class Grid;
 
-/**
-  This structure holds definition of single blob in the scene.
-  */
-struct blob_s {
-	float3 pos;		//!< Position of the blob
-	float magnitude;	//!< Magnitude, or how big should the blob be
-};
-typedef struct blob_s blob_t;
-
 class Blob : public AbstractProgram
 {
 protected:
@@ -30,12 +21,14 @@ public:
 	
 	/**
 	  This method adds an array of blobs to the scalar field
-	  \param blobs array of blobs to be added
+	  \param blobs array of blobs to be added. Positions of the blobs are
+	  kept in x,y and z components and magnitude (size) of the blob is read
+	  from w component.
 	  \param nBlobs length of blobs array
 	  \param grid grid to which blob values will be added
 	  */
 	void runBlob(
-		const blob_t* const blobs,
+		const float4* const blobs,
 		int nBlobs,
 		Grid& grid
 	) const;
