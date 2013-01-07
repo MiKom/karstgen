@@ -60,6 +60,8 @@ ADD_EXECUTABLE(karstgen
 	src/karstgen.cpp
 	src/util.h
 	src/util.cpp
+	src/context.h
+	src/context.cpp
 
 	src/math.h
 	src/tables.h
