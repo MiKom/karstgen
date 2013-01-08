@@ -26,6 +26,8 @@ class vec4
 public:
 	vec4(void) { }
 	vec4(const T val) : x(val), y(val) { }
+	vec4(const T x, const T y) : x(x), y(y), z(0), w(0) { }
+	vec4(const T x, const T y, const T z) : x(x), y(y), z(z), w(0) { }
 	vec4(const T x, const T y, const T z, const T w) : 
 		x(x), y(y), z(z), w(w) { }
 	
