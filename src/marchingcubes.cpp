@@ -246,5 +246,19 @@ MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 		totalVerts,
 		grid
 	);
-	//TODO: implement copying to return structure
+	
+	float3* hVertices = new float3[totalVerts];
+	float3* hNormals = new float3[totalVerts];
+	
+	q.enqueueReadBuffer(verts, CL_TRUE, 0, sizeof(float3) * totalVerts, hVertices);
+	q.enqueueReadBuffer(normals, CL_TRUE, 0, sizeof(float3) * totalVerts, hNormals);
+	
+	ret.verts.assign(hVertices, hVertices + totalVerts);
+	ret.normals.assign(hNormals, hNormals + totalVerts);
+	
+	delete[] hNormals;
+	delete[] hVertices;
+	
+	return ret;
 }
+
