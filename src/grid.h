@@ -49,8 +49,8 @@ public:
 		uint3 gridDim,
 		float3 voxelSize,
 		float3 startPos,
-		cl::Context &context,
-		cl::CommandQueue &cq
+		cl::Context& context,
+		cl::CommandQueue& cq
 	);
 	//Make grid noncopyable
 	Grid(const Grid& other) = delete;

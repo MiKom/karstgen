@@ -37,6 +37,8 @@ protected:
 public:
 	Context();
 	virtual ~Context();
+	cl::Context& getClContext() { return m_context; }
+	std::vector<cl::CommandQueue>& getQueues() { return m_queues; }
 	Blob* getBlobProgram() { return m_blobProgram; }
 	MarchingCubes* getMcProgram() { return m_mcProgram; }
 
