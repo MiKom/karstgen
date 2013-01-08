@@ -34,7 +34,7 @@ ENDIF()
 INCLUDE_DIRECTORIES( ${OPENCL_INCLUDE_DIRS} )
 INCLUDE_DIRECTORIES( "include/" )
 
-ADD_EXECUTABLE(karstgen
+SET(KARSTGEN_SOURCES
 	src/config.h
 	
 	src/abstractprogram.h
@@ -57,7 +57,6 @@ ADD_EXECUTABLE(karstgen
 	src/blob.cpp
 	kernels/blob.cl
 
-	src/karstgen.cpp
 	src/util.h
 	src/util.cpp
 	src/context.h
@@ -66,10 +65,13 @@ ADD_EXECUTABLE(karstgen
 	src/math.h
 	src/tables.h
 )
+
+ADD_EXECUTABLE(karstgen ${KARSTGEN_SOURCES} src/karstgen.cpp )
 TARGET_LINK_LIBRARIES( karstgen ${OPENCL_LIBRARIES} )
 
 ENABLE_TESTING()
 
-ADD_EXECUTABLE(01_simpleBlob tests/01_simpleBlob.cpp)
+INCLUDE_DIRECTORIES("src/")
+ADD_EXECUTABLE(01_simpleBlob ${KARSTGEN_SOURCES} tests/01_simpleBlob.cpp)
 TARGET_LINK_LIBRARIES( 01_simpleBlob ${OPENCL_LIBRARIES} )
 ADD_TEST(NAME 01_simpleBlob COMMAND 01_simpleBlob)
