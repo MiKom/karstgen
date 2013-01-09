@@ -14,6 +14,7 @@ Blob::Blob(
 	: AbstractProgram(sPath, context, commandQueues)
 {
 	mBlobValKernel = cl::Kernel(mProgram, "blobValue");
+	mNormalsKernel = cl::Kernel(mProgram, "calculateNormalsFromGradient");
 }
 
 void Blob::runBlob(const float4 *const blobs, int nBlobs, Grid &grid) const
