@@ -1,7 +1,7 @@
 #ifndef __KARSTGEN_GRID_H__
 #define __KARSTGEN_GRID_H__
 
-#include "math.h"
+#include "types.h"
 
 /**
   This class keeps values of computed density function and its normalsalong the
