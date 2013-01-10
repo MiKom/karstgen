@@ -12,6 +12,7 @@ protected:
 	cl::Context mContext;
 	cl::Program mProgram;
 	std::vector<cl::CommandQueue> mCommandQueues;
+	cl::CommandQueue mFirstQueue;
 	/**
 	  Constructor of this class compiles program with source from path
 	  parameter with given context

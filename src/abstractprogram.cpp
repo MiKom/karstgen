@@ -11,4 +11,5 @@ AbstractProgram::AbstractProgram(
 {
 	mProgram = buildProgram(path, context);
 	mCommandQueues = commandQueues;
+	mFirstQueue = commandQueues[0];
 }

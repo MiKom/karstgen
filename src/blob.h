@@ -13,6 +13,7 @@ class Blob : public AbstractProgram
 protected:
 	cl::Kernel mBlobValKernel;
 	cl::Kernel mNormalsKernel;
+	cl_ulong mConstantBufferSize;
 public:
 	Blob(
 		const cl::Context& context, 
