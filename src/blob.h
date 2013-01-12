@@ -33,7 +33,7 @@ public:
 		const float4* const blobs,
 		int nBlobs,
 		Grid& grid
-	) const;
+	);
 
 };
 
