@@ -62,7 +62,7 @@ SET(KARSTGEN_SOURCES
 	src/context.h
 	src/context.cpp
 
-	src/types.h
+	src/mathtypes.h
 	src/tables.h
 )
 

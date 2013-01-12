@@ -2,7 +2,7 @@
 #define __KARSTGEN_MARCHINGCUBES_H__
 
 #include "abstractprogram.h"
-#include "types.h"
+#include "mathtypes.h"
 
 class Grid;
 class Scan;
