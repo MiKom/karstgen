@@ -4,10 +4,13 @@
 #include "mathtypes.h"
 
 /**
-  This class keeps values of computed density function and its normalsalong the
-  grid of voxels. The returned buffer is float4 buffer that keeps normal in xyz
-  components, and density function value in w component. It can move data
-  between RAM and VRAM.
+  This class keeps values of computed density function at lattice vertices of a
+  grid of voxels and at epsilon-distant positions along each axis (it's a
+  gradient for normal vector calculations). The returned buffer is float4 buffer
+  that keeps gradient values in xyz components, and density function value in w
+  component.
+  
+  It can move data between RAM and VRAM.
   */
 class Grid
 {
@@ -22,9 +25,9 @@ protected:
 	cl::CommandQueue mCommandQueue;
 	float4 *mValues;
 	cl::Buffer mValuesBuffer;
-	uint3 mGridDim; /**< Size of the grid, i.e. how many small cuboids are
+	uint3 mGridDim; /**< Size of the grid, i.e. how many small voxels are
 	                  in each dimension. For example, for a grid made of
-	                  two small cuboids in x, three in y and four in z pass
+	                  two voxels in x, three in y and four in z pass
 	                  (2,3,4) */
 	float3 mVoxelSize; /**< Size of the single voxel */
 	float3 mStartPos;
