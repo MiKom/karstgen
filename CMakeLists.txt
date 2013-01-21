@@ -1,5 +1,5 @@
 #
-# Copyright © 2012 Miłosz Kosobucki
+# Copyright © 2012,2013 Miłosz Kosobucki
 # 
 # All rights reserved.
 # 
@@ -75,3 +75,13 @@ INCLUDE_DIRECTORIES("src/")
 ADD_EXECUTABLE(01_simpleBlob ${KARSTGEN_SOURCES} tests/01_simpleBlob.cpp)
 TARGET_LINK_LIBRARIES( 01_simpleBlob ${OPENCL_LIBRARIES} )
 ADD_TEST(NAME 01_simpleBlob COMMAND 01_simpleBlob)
+
+
+FIND_PACKAGE(GTest)
+IF(${GTEST_FOUND})
+	INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIR})
+	
+	ADD_EXECUTABLE(testrunner ${KARSTGEN_SOURCES} tests/testrunner.cpp)
+	TARGET_LINK_LIBRARIES(testrunner ${GTEST_LIBRARIES} ${OPENCL_LIBRARIES} ${GTEST_MAIN_LIBRARY})
+	ADD_TEST(NAME testrunner COMMAND testrunner)
+ENDIF()

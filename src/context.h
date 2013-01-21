@@ -24,7 +24,6 @@ protected:
 	  */ 
 	void initCL();
 	
-	
 	/**
 	  This function initializes all kernels that are necessary for computation
 	  */
