@@ -195,7 +195,7 @@ MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 	q.enqueueReadBuffer(
 		voxelOccupiedScan,
 		CL_TRUE,
-		(numVoxels-1) * sizeof(uint),
+		(numVoxels-2) * sizeof(uint),
 		sizeof(uint),
 		&lastScanElement
 	);
@@ -224,7 +224,7 @@ MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 	q.enqueueReadBuffer(
 		voxelVertsScan,
 		CL_TRUE,
-		(numVoxels - 1) * sizeof(uint),
+		(numVoxels - 2) * sizeof(uint),
 		sizeof(uint),
 		&lastScanElement
 	);

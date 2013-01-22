@@ -96,6 +96,7 @@ size_t Scan::scanExclusiveLocal1(
 		2,
 		2 * WORKGROUP_SIZE * sizeof(unsigned int),
 		NULL);
+	mScanExclusiveLocal1.setArg(3, size);
 	
 	size_t localWorkSize = WORKGROUP_SIZE;
 	size_t globalWorkSize = (n * size) / 4;
@@ -143,8 +144,8 @@ void Scan::scanExclusiveLocal2(
 	mScanExclusiveLocal2.setArg(1, dst);
 	mScanExclusiveLocal2.setArg(2, src);
 	mScanExclusiveLocal2.setArg(3, 2 * WORKGROUP_SIZE * sizeof(unsigned int), NULL);
-	mScanExclusiveLocal2.setArg(4, &elements);
-	mScanExclusiveLocal2.setArg(5, &size);
+	mScanExclusiveLocal2.setArg(4, elements);
+	mScanExclusiveLocal2.setArg(5, size);
 	
 	size_t localWorkSize = WORKGROUP_SIZE;
 	size_t globalWorkSize = iSnapUp(elements, WORKGROUP_SIZE);
