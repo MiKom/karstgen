@@ -40,6 +40,7 @@ public:
 	std::vector<cl::CommandQueue>& getQueues() { return m_queues; }
 	Blob* getBlobProgram() { return m_blobProgram; }
 	MarchingCubes* getMcProgram() { return m_mcProgram; }
+	Scan* getScanProgram() { return m_scanProgram; }
 
 };
 
