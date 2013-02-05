@@ -90,7 +90,7 @@ unsigned int Scan::factorRadix2(unsigned int& log2L, unsigned int L)
 	}
 }
 
-size_t Scan::scanExclusiveLocal1(
+void Scan::scanExclusiveLocal1(
 	cl::Buffer dst,
 	cl::Buffer src,
 	unsigned int n,
@@ -112,10 +112,9 @@ size_t Scan::scanExclusiveLocal1(
 		cl::NDRange(globalWorkSize),
 		cl::NDRange(localWorkSize)
 	);
-	return localWorkSize;
 }
 
-size_t Scan::scanExclusiveShort(
+void Scan::scanExclusiveShort(
 	cl::Buffer dst,
 	cl::Buffer src,
 	unsigned int batchSize,
@@ -135,7 +134,7 @@ size_t Scan::scanExclusiveShort(
 		throw runtime_error("Scan::scanExclusiveShort: not all workgroups packed with data");
 	}
 	
-	return scanExclusiveLocal1(dst, src, batchSize, arrayLength);
+	scanExclusiveLocal1(dst, src, batchSize, arrayLength);
 }
 
 void Scan::scanExclusiveLocal2(
@@ -164,7 +163,7 @@ void Scan::scanExclusiveLocal2(
 	);
 }
 
-size_t Scan::uniformUpdate(cl::Buffer dst, unsigned int n)
+void Scan::uniformUpdate(cl::Buffer dst, unsigned int n)
 {
 	mUniformUpdate.setArg(0, dst);
 	mUniformUpdate.setArg(1, mInternal);
@@ -178,10 +177,9 @@ size_t Scan::uniformUpdate(cl::Buffer dst, unsigned int n)
 		cl::NDRange(globalWorkSize),
 		cl::NDRange(localWorkSize)
 	);
-	return localWorkSize;
 }
 
-size_t Scan::scanExclusiveLarge(
+void Scan::scanExclusiveLarge(
 	cl::Buffer dst,
 	cl::Buffer src,
 	unsigned int batchSize,
@@ -200,14 +198,13 @@ size_t Scan::scanExclusiveLarge(
 	if( (batchSize * arrayLength) > MAX_BATCH_ELEMENTS) {
 		throw runtime_error("Scan::scanExclusiveLarge: total batch size limit exceeded");
 	}
-	
+
 	scanExclusiveLocal1(
 		dst,
 		src,
 		(batchSize * arrayLength) / (4 * WORKGROUP_SIZE),
 		4 * WORKGROUP_SIZE
 	);
-	
 	scanExclusiveLocal2(
 		dst,
 		src,
@@ -215,7 +212,7 @@ size_t Scan::scanExclusiveLarge(
 		arrayLength / (4 * WORKGROUP_SIZE)
 	);
 	
-	return uniformUpdate(
+	uniformUpdate(
 		dst,
 		(batchSize * arrayLength) / (4 * WORKGROUP_SIZE)
 	);

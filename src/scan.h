@@ -21,13 +21,13 @@ protected:
 	
 	static unsigned int factorRadix2(unsigned int& log2L, unsigned int L);
 	
-	size_t scanExclusiveLocal1(
+	void scanExclusiveLocal1(
 	                cl::Buffer dst,
 	                cl::Buffer src,
 	                unsigned int n,
 	                unsigned int size);
 	
-	size_t scanExclusiveShort(
+	void scanExclusiveShort(
 	                cl::Buffer dst,
 	                cl::Buffer src,
 	                unsigned int batchSize,
@@ -39,9 +39,9 @@ protected:
 	                unsigned int n,
 	                unsigned int size);
 	
-	size_t uniformUpdate(cl::Buffer dst, unsigned int n);
+	void uniformUpdate(cl::Buffer dst, unsigned int n);
 	
-	size_t scanExclusiveLarge(
+	void scanExclusiveLarge(
 	                cl::Buffer dst,
 	                cl::Buffer src,
 	                unsigned int batchSize,
