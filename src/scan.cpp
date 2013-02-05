@@ -60,6 +60,12 @@ Scan::Scan(
 	
 	if(!hasCapableDevice) {
 		throw std::runtime_error("No device capable of running Scan operation found");
+	} else {
+		mInternal = cl::Buffer(
+			mContext,
+			CL_MEM_READ_WRITE,
+			(MAX_BATCH_ELEMENTS / (4 * WORKGROUP_SIZE)) * sizeof(unsigned int)
+		);
 	}
 }
 
