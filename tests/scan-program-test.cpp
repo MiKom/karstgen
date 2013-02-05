@@ -1,10 +1,14 @@
 #include <iostream>
 #include <algorithm>
 
+#include "config.h"
 #include "context.h"
 #include "scan.h"
+#include "util.h"
 
 #include "gtest/gtest.h"
+
+using namespace std;
 
 class ScanTest : public testing::Test
 {
@@ -13,6 +17,10 @@ protected:
 	
 	virtual void SetUp() {
 		ctx = new Context();
+	}
+	
+	virtual void TearDown() {
+		delete ctx;
 	}
 	static void cpu_scan(
 		unsigned const int *in_array,
@@ -51,7 +59,7 @@ TEST_F(ScanTest, ShortArrayTest)
 	
 	cl::Buffer out(
 		ctx->getClContext(),
-		CL_MEM_WRITE_ONLY,
+		CL_MEM_READ_WRITE,
 		sizeof(unsigned int) * ARRAY_SIZE
 	);
 	Scan* scanProg = ctx->getScanProgram();
@@ -60,6 +68,18 @@ TEST_F(ScanTest, ShortArrayTest)
 	unsigned int ref_array[ARRAY_SIZE];
 	cpu_scan(in_array, ref_array, ARRAY_SIZE);
 	
-	//TODO: implement reading result from gpu and proper assertion below
-	EXPECT_TRUE(arrays_equal(ref_array, ref_array, ARRAY_SIZE));
+	unsigned int result_array[ARRAY_SIZE];
+	cl::CommandQueue q = ctx->getQueues()[0];
+	
+	try {
+		q.enqueueReadBuffer(out, CL_TRUE, 0, sizeof(unsigned int) * ARRAY_SIZE, result_array);
+	} catch ( cl::Error &e ) {
+		cerr
+		  << "OpenCL runtime error at function " << endl
+		  << e.what() << endl
+		  << "Error code: "<< endl
+		  << errorString(e.err()) << endl;
+		FAIL();
+	}
+	EXPECT_TRUE(arrays_equal(ref_array, result_array, ARRAY_SIZE));
 }
