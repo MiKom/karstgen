@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <memory>
 
 #include "config.h"
 #include "context.h"
@@ -41,6 +42,41 @@ protected:
 			return testing::AssertionFailure() << "Arrays differ";
 		}
 	}
+	
+	bool run_test(uint *array, size_t size)
+	{
+		try {
+			cl::Buffer in(
+				ctx->getClContext(),
+				CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+				sizeof(uint) * size,
+				array
+			);
+			cl::Buffer out(
+				ctx->getClContext(),
+				CL_MEM_READ_WRITE,
+				sizeof(uint) * size
+			);
+			ctx->getScanProgram()->compute(in, out, size);
+			
+			std::unique_ptr<uint[]> ref_array(new uint[size]);
+			cpu_scan(array, ref_array.get(), size);
+			
+			std::unique_ptr<uint[]> host_result(new uint[size]);
+			cl::CommandQueue q = ctx->getQueues()[0];
+			q.enqueueReadBuffer(out, CL_TRUE, 0, sizeof(uint)*size, host_result.get());
+			
+			return arrays_equal(ref_array.get(), host_result.get(), size);
+		} catch ( cl::Error &e ) {
+			cerr
+			  << "OpenCL runtime error at function " << endl
+			  << e.what() << endl
+			  << "Error code: "<< endl
+			  << errorString(e.err()) << endl;
+			return false;
+		}
+		
+	}
 };
 
 TEST_F(ScanTest, ShortArrayTest)
@@ -50,36 +86,5 @@ TEST_F(ScanTest, ShortArrayTest)
 	for(int i=0; i<ARRAY_SIZE; i++) {
 		in_array[i] = 1;
 	}
-	cl::Buffer in(
-		ctx->getClContext(),
-		CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-		sizeof(unsigned int) * ARRAY_SIZE,
-		in_array
-	);
-	
-	cl::Buffer out(
-		ctx->getClContext(),
-		CL_MEM_READ_WRITE,
-		sizeof(unsigned int) * ARRAY_SIZE
-	);
-	Scan* scanProg = ctx->getScanProgram();
-	scanProg->compute(in, out, ARRAY_SIZE);
-	
-	unsigned int ref_array[ARRAY_SIZE];
-	cpu_scan(in_array, ref_array, ARRAY_SIZE);
-	
-	unsigned int result_array[ARRAY_SIZE];
-	cl::CommandQueue q = ctx->getQueues()[0];
-	
-	try {
-		q.enqueueReadBuffer(out, CL_TRUE, 0, sizeof(unsigned int) * ARRAY_SIZE, result_array);
-	} catch ( cl::Error &e ) {
-		cerr
-		  << "OpenCL runtime error at function " << endl
-		  << e.what() << endl
-		  << "Error code: "<< endl
-		  << errorString(e.err()) << endl;
-		FAIL();
-	}
-	EXPECT_TRUE(arrays_equal(ref_array, result_array, ARRAY_SIZE));
+	EXPECT_TRUE(run_test(in_array, ARRAY_SIZE));
 }
