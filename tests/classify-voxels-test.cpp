@@ -1,10 +1,12 @@
 #include "config.h"
+#include "context.h"
+#include "grid.h"
 #include "marchingcubes.h"
 
 #include "gtest/gtest.h"
+#include "common-test.h"
 
-
-class ClassifyTest : public testing::Test
+class ClassifyTest : public CommonTest
 {
 };
 

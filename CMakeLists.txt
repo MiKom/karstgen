@@ -81,9 +81,17 @@ FIND_PACKAGE(GTest)
 IF(${GTEST_FOUND})
 
 	INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIR})
+	SET(TEST_COMMON_SOURCES
+		tests/common-test.h
+		tests/common-test.cpp
+	)
 
 	MACRO(REGISTER_TEST executableName testFiles testName)
-		ADD_EXECUTABLE(${executableName} ${KARSTGEN_SOURCES} ${testFiles})
+		ADD_EXECUTABLE(${executableName}
+			${KARSTGEN_SOURCES}
+			${testFiles}
+			${TEST_COMMON_SOURCES}
+		)
 		TARGET_LINK_LIBRARIES(${executableName} ${GTEST_LIBRARIES} ${OPENCL_LIBRARIES} ${GTEST_MAIN_LIBRARY})
 		ADD_TEST(NAME ${testName} COMMAND ${executableName})
 	ENDMACRO()

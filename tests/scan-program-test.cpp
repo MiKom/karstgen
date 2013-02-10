@@ -6,23 +6,15 @@
 #include "context.h"
 #include "scan.h"
 #include "util.h"
+#include "common-test.h"
 
 #include "gtest/gtest.h"
 
 using namespace std;
 
-class ScanTest : public testing::Test
+class ScanTest : public CommonTest
 {
 protected:
-	Context *ctx;
-	
-	virtual void SetUp() {
-		ctx = new Context();
-	}
-	
-	virtual void TearDown() {
-		delete ctx;
-	}
 	static void cpu_scan(
 		unsigned const int *in_array,
 		unsigned int *out_array,
@@ -32,14 +24,6 @@ protected:
 		out_array[1] = in_array[0];
 		for(int i=2; i<n; i++) {
 			out_array[i] = out_array[i-1] + in_array[i-1];
-		}
-	}
-	
-	static testing::AssertionResult arrays_equal(unsigned const int *a1, unsigned const int *a2, size_t size) {
-		if(std::equal(a1, a1+size, a2) ){
-			return ::testing::AssertionSuccess();
-		} else {
-			return testing::AssertionFailure() << "Arrays differ";
 		}
 	}
 	
