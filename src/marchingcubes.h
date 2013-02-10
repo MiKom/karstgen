@@ -27,6 +27,7 @@ protected:
 	
 	Scan* mScanOp;
 	
+public:
 	void launchClassifyVoxel(
 		const Grid& grid,
 		cl::Buffer voxelVerts,
@@ -51,7 +52,6 @@ protected:
 		unsigned int maxVerts,
 		const Grid& grid
 	);
-public:
 	/**
 	  \param scan pointer to object storing initialized scan operator
 	*/
