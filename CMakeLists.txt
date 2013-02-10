@@ -11,7 +11,7 @@ PROJECT(karstgen)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 IF(${CMAKE_COMPILER_IS_GNUCXX})
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	ENDIF(${CMAKE_COMPILER_IS_GNUCXX})
 
 FIND_PACKAGE(OpenCL)
@@ -97,5 +97,5 @@ IF(${GTEST_FOUND})
 	ENDMACRO()
 
 	REGISTER_TEST(scan-program-test tests/scan-program-test.cpp scan-program-test)
-	REGISTER_TEST(calssify-voxels-test tests/classify-voxels-test.cpp classify-voxels-test)
+	REGISTER_TEST(classify-voxels-test tests/classify-voxels-test.cpp classify-voxels-test)
 ENDIF()
