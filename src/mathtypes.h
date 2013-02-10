@@ -8,7 +8,6 @@ public:
 	vec2(void) { }
 	vec2(const T val) : x(val), y(val) { }
 	vec2(const T x, const T y) : x(x), y(y) { }
-	vec2(const vec2& val) : x(val.x), y(val.y) { }
 	//data
 	union {
 		struct { T x; T y; };
@@ -25,14 +24,11 @@ class vec4
 {
 public:
 	vec4(void) { }
-	vec4(const T val) : x(val), y(val) { }
+	vec4(const T val) : x(val), y(val), z(val), w(val) { }
 	vec4(const T x, const T y) : x(x), y(y), z(0), w(0) { }
 	vec4(const T x, const T y, const T z) : x(x), y(y), z(z), w(0) { }
 	vec4(const T x, const T y, const T z, const T w) : 
 		x(x), y(y), z(z), w(w) { }
-	
-	vec4(const vec4& val) : x(val.x), y(val.y), z(val.z), w(val.w) { }
-	
 	//data
 	union {
 		struct { T x; T y; T z; T w; };
