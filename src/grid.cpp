@@ -8,14 +8,14 @@ Grid::Grid(
 	cl::Context& context,
 	cl::CommandQueue& cq
 ) : 
-	mGridDim(gridDim),
-	mVoxelSize(voxelSize),
-	mStartPos(startPos),
-	mContext(context),
-	mCommandQueue(cq),
-	mStorage(Storage::HOST),
-	mValues(new float4[getFlatDataSize(gridDim)])
-{}
+	mGridDim{gridDim},
+	mVoxelSize{voxelSize},
+	mStartPos{startPos},
+	mContext{context},
+	mCommandQueue{cq},
+	mStorage{Storage::HOST},
+	mValues{new float4[getFlatDataSize(gridDim)]}
+{ }
 
 Grid::~Grid()
 {
