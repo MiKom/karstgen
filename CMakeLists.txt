@@ -79,12 +79,15 @@ ADD_TEST(NAME 01_simpleBlob COMMAND 01_simpleBlob)
 
 FIND_PACKAGE(GTest)
 IF(${GTEST_FOUND})
+
 	INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIR})
-	
-	SET(TEST_SOURCES
-		tests/scan-program-test.cpp
-	)
-	ADD_EXECUTABLE(scan-program-test ${KARSTGEN_SOURCES} ${TEST_SOURCES})
-	TARGET_LINK_LIBRARIES(scan-program-test ${GTEST_LIBRARIES} ${OPENCL_LIBRARIES} ${GTEST_MAIN_LIBRARY})
-	ADD_TEST(NAME scan-program-test COMMAND scan-program-test)
+
+	MACRO(REGISTER_TEST executableName testFiles testName)
+		ADD_EXECUTABLE(${executableName} ${KARSTGEN_SOURCES} ${testFiles})
+		TARGET_LINK_LIBRARIES(${executableName} ${GTEST_LIBRARIES} ${OPENCL_LIBRARIES} ${GTEST_MAIN_LIBRARY})
+		ADD_TEST(NAME ${testName} COMMAND ${executableName})
+	ENDMACRO()
+
+	REGISTER_TEST(scan-program-test tests/scan-program-test.cpp scan-program-test)
+	REGISTER_TEST(calssify-voxels-test tests/classify-voxels-test.cpp classify-voxels-test)
 ENDIF()
