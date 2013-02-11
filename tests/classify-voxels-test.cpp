@@ -61,7 +61,7 @@ TEST_F(ClassifyTest, FlatSurfaceTest)
 	std::unique_ptr<uint[]> voxelOccupiedRef{new uint[gridSize]};
 	
 	for(int i=0; i<sliceSize; i++) {
-		voxelVertsRef[i] = 2;
+		voxelVertsRef[i] = 6;
 		voxelOccupiedRef[i] = 1;
 	}
 	for(int i=sliceSize; i<gridSize; i++) {
