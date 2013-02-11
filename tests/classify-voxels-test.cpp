@@ -15,10 +15,14 @@ class ClassifyTest : public CommonTest
 
 TEST_F(ClassifyTest, FlatSurfaceTest)
 {
-	const int sliceSize = 256*256;
-	const int gridSize = 256*256*256;
+	const int dimLen = 256;
+	const int sliceSize = dimLen * dimLen;
+	const int gridSize = dimLen * dimLen * dimLen;
 	
-	uint3 gridDim{256};
+	const int gridDataSliceSize = (dimLen + 1) * (dimLen + 1);
+	const int gridDataSize = (dimLen + 1) * (dimLen + 1) * (dimLen + 1);
+	
+	uint3 gridDim{dimLen};
 	float3 voxelSize{1.0f};
 	float3 startPos{0.0f};
 	
@@ -28,10 +32,10 @@ TEST_F(ClassifyTest, FlatSurfaceTest)
 	float4 *values = grid.getValues();
 
 	//Set first slice to all -1's
-	for(int i=0; i<257*257; i++) {
+	for(int i=0; i<gridDataSliceSize; i++) {
 		values[i] = {-1.0f};
 	}
-	for(int i=257*257; i<257*257*257; i++) {
+	for(int i=gridDataSliceSize; i<gridDataSize; i++) {
 		values[i] = {1.0f};
 	}
 
