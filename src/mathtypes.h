@@ -1,6 +1,8 @@
 #ifndef __KARSTGEN_MATH_H__
 #define __KARSTGEN_MATH_H__
 
+#include <ostream>
+
 template<typename T>
 class vec2
 {
@@ -14,7 +16,13 @@ public:
 		struct { T u; T v; };
 		T cell[2];
 	};
+	
+	friend std::ostream& operator<<(std::ostream& os, const vec2<T> &v)
+	{
+		return os << "{" << v.cell[0] << ", " << v.cell[1] << "}";
+	}
 };
+
 typedef vec2<float> float2;
 typedef vec2<int> int2;
 typedef vec2<unsigned int> uint2;
@@ -35,13 +43,22 @@ public:
 		struct { T r; T g; T b; T a; };
 		T cell[4];
 	};
+	
+	friend std::ostream& operator<<(std::ostream& os, const vec4<T> &v)
+	{
+		return os << "{" << v.cell[0] << ", " << v.cell[1]  << ", " << v.cell[2] << ", " << v.cell[3] << "}";
+	}
 };
+
+template <typename T>
+using vec3 = vec4<T>;
+
 typedef vec4<float> float4;
 typedef vec4<int> int4;
 typedef vec4<unsigned int> uint4;
 
-typedef float4 float3;
-typedef int4 int3;
-typedef uint4 uint3;
+typedef vec3<float> float3;
+typedef vec3<int> int3;
+typedef vec3<uint> uint3;
 
 #endif
