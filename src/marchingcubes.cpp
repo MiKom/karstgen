@@ -6,6 +6,8 @@
 #include "scan.h"
 #include "marchingcubes.h"
 
+#include <memory>
+
 using namespace std;
 
 //path of the cl source
@@ -247,17 +249,14 @@ MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 		grid
 	);
 	
-	float3* hVertices = new float3[totalVerts];
-	float3* hNormals = new float3[totalVerts];
+	unique_ptr<float3[]> hVertices{new float3[totalVerts]};
+	unique_ptr<float3[]> hNormals{new float3[totalVerts]};
 	
-	q.enqueueReadBuffer(verts, CL_TRUE, 0, sizeof(float3) * totalVerts, hVertices);
-	q.enqueueReadBuffer(normals, CL_TRUE, 0, sizeof(float3) * totalVerts, hNormals);
+	q.enqueueReadBuffer(verts, CL_TRUE, 0, sizeof(float3) * totalVerts, hVertices.get());
+	q.enqueueReadBuffer(normals, CL_TRUE, 0, sizeof(float3) * totalVerts, hNormals.get());
 	
-	ret.verts.assign(hVertices, hVertices + totalVerts);
-	ret.normals.assign(hNormals, hNormals + totalVerts);
-	
-	delete[] hNormals;
-	delete[] hVertices;
+	ret.verts.assign(hVertices.get(), hVertices.get() + totalVerts);
+	ret.normals.assign(hNormals.get(), hNormals.get() + totalVerts);
 	
 	return ret;
 }
