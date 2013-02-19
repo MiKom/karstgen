@@ -72,3 +72,14 @@ TEST_F(ScanTest, ShortArrayTest)
 	}
 	EXPECT_TRUE(run_test(in_array, ARRAY_SIZE));
 }
+
+TEST_F(ScanTest, LongArrayTest)
+{
+	static const int ARRAY_SIZE = 128*128*128;
+	std::unique_ptr<uint[]> in_array{new uint[ARRAY_SIZE]};
+	for(int i=0; i<ARRAY_SIZE; i++) {
+		in_array.get()[i] = 1;
+	}
+	EXPECT_TRUE(run_test(in_array.get(), ARRAY_SIZE));
+	
+}
