@@ -15,18 +15,6 @@ using namespace std;
 class ScanTest : public CommonTest
 {
 protected:
-	static void cpu_scan(
-		unsigned const int *in_array,
-		unsigned int *out_array,
-		size_t n) {
-		
-		out_array[0] = 0;
-		out_array[1] = in_array[0];
-		for(int i=2; i<n; i++) {
-			out_array[i] = out_array[i-1] + in_array[i-1];
-		}
-	}
-	
 	bool run_test(uint *array, size_t size)
 	{
 		try {
@@ -44,7 +32,7 @@ protected:
 			ctx->getScanProgram()->compute(in, out, size);
 			
 			std::unique_ptr<uint[]> ref_array(new uint[size]);
-			cpu_scan(array, ref_array.get(), size);
+			cpu_scan<uint>(array, ref_array.get(), size);
 			
 			std::unique_ptr<uint[]> host_result(new uint[size]);
 			cl::CommandQueue q = ctx->getQueues()[0];
@@ -75,7 +63,7 @@ TEST_F(ScanTest, ShortArrayTest)
 
 TEST_F(ScanTest, LongArrayTest)
 {
-	static const int ARRAY_SIZE = 128*128*128;
+	static const int ARRAY_SIZE = 64*64*64;
 	std::unique_ptr<uint[]> in_array{new uint[ARRAY_SIZE]};
 	for(int i=0; i<ARRAY_SIZE; i++) {
 		in_array.get()[i] = 1;

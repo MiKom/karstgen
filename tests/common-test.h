@@ -20,4 +20,17 @@ protected:
 			return ::testing::AssertionFailure() << "Arrays differ";
 		}
 	}
+	
+	template<typename T>
+	static void cpu_scan(
+		const T *in_array,
+		T *out_array,
+		size_t n) {
+		
+		out_array[0] = 0;
+		out_array[1] = in_array[0];
+		for(int i=2; i<n; i++) {
+			out_array[i] = out_array[i-1] + in_array[i-1];
+		}
+	}
 };
