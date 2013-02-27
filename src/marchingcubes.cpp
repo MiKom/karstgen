@@ -173,15 +173,15 @@ MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 	
 	unsigned int numVoxels = gridSize.x * gridSize.y * gridSize.z;
 	cl::Buffer voxelVerts = cl::Buffer(
-		mContext, CL_MEM_WRITE_ONLY, sizeof(cl_uint) * numVoxels);
+		mContext, CL_MEM_READ_WRITE, sizeof(cl_uint) * numVoxels);
 	
 	cl::Buffer voxelOccupied = cl::Buffer(
-		mContext, CL_MEM_WRITE_ONLY, sizeof(cl_uint) * numVoxels);
+		mContext, CL_MEM_READ_WRITE, sizeof(cl_uint) * numVoxels);
 	
 	launchClassifyVoxel(grid, voxelVerts, voxelOccupied, isoValue);
 	
 	cl::Buffer voxelOccupiedScan = cl::Buffer(
-		mContext, CL_MEM_WRITE_ONLY, sizeof(cl_uint) * numVoxels);
+		mContext, CL_MEM_READ_WRITE, sizeof(cl_uint) * numVoxels);
 	mScanOp->compute(voxelOccupied, voxelOccupiedScan, numVoxels);
 	
 	//Reading total number of non-empty voxels
@@ -202,18 +202,15 @@ MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 		&lastScanElement
 	);
 	int activeVoxels = lastElement + lastScanElement;
-	//These are not needed anymore
-	voxelOccupied = cl::Buffer();
-	voxelOccupiedScan = cl::Buffer();
 	
 	// Compacting array of occupied voxels
 	cl::Buffer compactedVoxelArray = cl::Buffer(
-		mContext, CL_MEM_WRITE_ONLY, sizeof(uint) * activeVoxels);
+		mContext, CL_MEM_READ_WRITE, sizeof(uint) * activeVoxels);
 	launchCompactVoxels(compactedVoxelArray,
 		voxelOccupied, voxelOccupiedScan, numVoxels);
 	
 	//Reading total number of vertices to generate
-	cl::Buffer voxelVertsScan = cl::Buffer(mContext, CL_MEM_WRITE_ONLY,
+	cl::Buffer voxelVertsScan = cl::Buffer(mContext, CL_MEM_READ_WRITE,
 		sizeof(cl_uint) * numVoxels);
 	mScanOp->compute(voxelVerts, voxelVertsScan, numVoxels);
 	q.enqueueReadBuffer(
