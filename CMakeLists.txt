@@ -98,5 +98,6 @@ IF(${GTEST_FOUND})
 
 	REGISTER_TEST(scan-program-test tests/scan-program-test.cpp scan-program-test)
 	REGISTER_TEST(classify-voxels-test tests/classify-voxels-test.cpp classify-voxels-test)
+	REGISTER_TEST(compact-voxels-test tests/compact-voxels-test.cpp compact-voxels-test)
 	REGISTER_TEST(marching-cubes-test tests/marching-cubes-test.cpp marching-cubes-test)
 ENDIF()
