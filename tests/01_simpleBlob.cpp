@@ -18,7 +18,7 @@ int main()
 		Grid grid(
 			uint3(64,64,64),
 			float3(5.0f/64.0f, 5.0f / 64.0f, 5.0f / 64.0f),
-			float3(-5.0f, -5.0f, -5.0f),
+			float3(-2.5f, -2.5f, -2.5f),
 			ctx.getClContext(),
 			ctx.getQueues()[0]
 		);
