@@ -101,7 +101,12 @@ void run1DKernelMultipleQueues(
   Buffer should be valid in this queue.
   */
 template<class T>
-void dump1DBuffer(std::ostream& os, cl::Buffer& buffer, size_t size, cl::CommandQueue& queue)
+void dump1DBuffer(
+	std::ostream& os,
+	const cl::Buffer& buffer,
+	size_t size,
+	cl::CommandQueue& queue
+)
 {
 	std::unique_ptr<T[]> hostBuf{new T[size]};
 	queue.enqueueReadBuffer(
@@ -134,7 +139,7 @@ void dump1DBuffer(std::ostream& os, cl::Buffer& buffer, size_t size, cl::Command
 template<class T>
 void dump2DBuffer(
 	std::ostream& os,
-	cl::Buffer& buffer,
+	const cl::Buffer& buffer,
 	size_t sizeX,
 	size_t sizeY,
 	cl::CommandQueue& queue
@@ -176,7 +181,7 @@ void dump2DBuffer(
 template<class T>
 void dump3DBuffer(
 	std::ostream& os,
-	cl::Buffer& buffer,
+	const cl::Buffer& buffer,
 	size_t sizeX,
 	size_t sizeY,
 	size_t sizeZ,
