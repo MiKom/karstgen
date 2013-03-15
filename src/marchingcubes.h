@@ -52,9 +52,6 @@ public:
 		unsigned int maxVerts,
 		const Grid& grid
 	);
-	/**
-	  \param scan pointer to object storing initialized scan operator
-	*/
 	MarchingCubes(
 		const cl::Context ctx,
 		const std::vector<cl::CommandQueue> &queues,
@@ -62,17 +59,6 @@ public:
 	);
 	virtual ~MarchingCubes() {}
 
-	/**
-	  This function computes triangle mesh from scalar field described
-	  by grid. Value that will be treated as the frontier of the isosurface
-	  is passed in isoValue parameter.
-	  
-	  \param grid scalar field which describes isosurface
-	  \param isoValue value that will be treated as a frontier of the
-	  surface
-	  \return simple structure containing pointers to vector of vertices
-	  (triplets of coordinates) and normals (triplets of coordinates as well)
-	*/
 	MCMesh compute(Grid &grid, float isoValue);
 };
 

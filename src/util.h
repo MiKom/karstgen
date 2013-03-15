@@ -10,7 +10,11 @@
 
 #include <CL/cl.hpp>
 
-/** \file */
+/** \file
+  \brief Various utility functions.
+  This file contains some utility functions that were found helpful during
+  development of the program. They mostly deal with OpenCL
+*/
 
 /**
   This macro compares sample and reference and stops the program if they are
@@ -21,67 +25,28 @@
 */
 #define checkError(sample, reference) __checkError(sample, reference, __FILE__, __LINE__)
 
-/**
-  This method takes OpenCL error code and returns string associated with it as
-  defined in <CL/cl.h>
-  
-  \param error error code
-  \return string with textual representation of error code
-*/
 const std::string errorString(cl_int error);
 
-/**
-  This method reads the whole content of text file and puts it in string object
-  
-  \param path to the file to be read
-  \return string object with text from the file
-*/
 std::string readSource(const std::string &filename);
 
-/**
-  This function builds program with source from provided file
-  \param path path to file containing the source code of the program
-  \return built OpenCL program object
-  \throws BuildError object is thrown if 
-  */
 cl::Program buildProgram(const std::string &path, const cl::Context &context);
 
-/**
-  This function checks every device associated with program for build status
-  other than CL_SUCCESS. If there is one, the staus of the first device other
-  than CL_SUCCESS is returned
-  \param program program object to check the build status of
-  \return build status of the first device with build status other than CL_SUCCESS
-  */
 cl_int buildStatus(const cl::Program& program);
 
-/**
-  This functions constructs pretty build log for every device associated with
-  program.
-  \param program program for which build log will be printed
-  \return string of build log from all devices associated with program
-  */
 std::string buildLog(const cl::Program& program);
 
-/**
-  This function runs 1D kernel by splitting the workload evenly on all provided
-  command queues. All command queues must be in the same context.
-  \warning Pass only kernels that are fully initialized ant their parameters are
-  properly set, and valid (e.g. respective data is copied to the context etc.)
-  
-  \param kernel A 1D kernel to be executed The kernel
-  \param queues vector of comman queues on which the work will be executed
-  \param globalSize size of the work to be done
-  \param localSize size of the single work group. If 0 is passed then
-         cl::NullRange will be used
-  \param synchronous if true, function will not return until all work has been
-         done
-  \param event list of events that will be completed before anything will be
-         enqueued
-  */
 void run1DKernelMultipleQueues(
 	const cl::Kernel& kernel,
 	const std::vector<cl::CommandQueue>& queues,
+	unsigned int globalSize,
+	unsigned int localSize = 0,
+	bool synchronous = false,
+	const std::vector<cl::Event>* events = NULL
+);
+
+void run1DKernelSingleQueue(
+	const cl::Kernel& kernel,
+	const cl::CommandQueue& queue,
 	unsigned int globalSize,
 	unsigned int localSize = 0,
 	bool synchronous = false,
@@ -208,29 +173,6 @@ void dump3DBuffer(
 	
 }
 
-/**
-  Run 1D kernel on single command queue.
-  \warning Pass only kernels that are fully initialized ant their parameters are
-  properly set, and valid (e.g. respective data is copied to the context etc.)
-  
-  \param param kernel A 1D kernel to be executed The kernel
-  \param queue command queue, on which the kernel will be queued
-  \param globalSize size of the work to be done
-  \param localSize size of the single work group. If 0 is passed then
-         cl::NullRange will be used
-  \param synchronous if true, function will not return until all work has been
-         done
-  \param event list of events that will be completed before anything will be
-         enqueued
-  */
-void run1DKernelSingleQueue(
-	const cl::Kernel& kernel,
-	const cl::CommandQueue& queue,
-	unsigned int globalSize,
-	unsigned int localSize = 0,
-	bool synchronous = false,
-	const std::vector<cl::Event>* events = NULL
-);
 
 inline void
 __checkError(cl_int sample, cl_int reference, const char* filename, const int line)

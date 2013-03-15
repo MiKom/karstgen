@@ -3,6 +3,15 @@
 
 #include "abstractprogram.h"
 
+/**
+  \brief Excluse prefix sum scan operation.
+  
+  This class can perform exclusive prefix sum or "scan" operation on an array
+  of unsigned ints.
+  
+  Implementation was borrowed from NVidia GPU Computing SDK and customized for
+  OpenCL C++ wrapper API.
+  */
 class Scan : public AbstractProgram
 {
 protected:

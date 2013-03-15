@@ -1,6 +1,12 @@
 #include "config.h"
 #include "grid.h"
 
+/**
+  \param context OpenCL context within which this grid will operate
+  \param cq OpenCL command queue (in the same context as context
+  parameter) that will be used to move data back and forth between the
+  devices.
+  */
 Grid::Grid(
 	uint3 gridDim,
 	float3 voxelSize,
@@ -22,6 +28,12 @@ Grid::~Grid()
 	delete[] mValues;
 }
 
+/**
+  This function calculates the number of data point on the grid that
+  will be needed to keep the grid data. Basically, for x*y*z sized grid
+  (in voxels in each dimension) you need (x+1) * (y+1) * (z+1) data
+  points. This is a utility function to compute that.
+  */
 unsigned int
 Grid::getFlatDataSize(const uint3& gridDim)
 {

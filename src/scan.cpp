@@ -2,7 +2,7 @@
  * This software contains source code provided by NVIDIA Corporation.
  *
  * The code was taken from NVIDIA GPU Computing SDK and modified to work with
- * C++ wrapper API.
+ * OpenCL C++ wrapper API.
  */
 
 #include "config.h"

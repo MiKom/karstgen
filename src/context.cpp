@@ -26,6 +26,12 @@ Context::~Context()
 	deinitKernels();
 }
 
+/**
+  \brief Initializes OpenCL runtime.
+  
+  This function initializes OpenCL context and command queue for each device
+  available on the first platform returned by cl::Platform::get.
+  */
 void Context::initCL()
 {
 	vector<cl::Platform> platforms;
@@ -72,6 +78,9 @@ void Context::initCL()
 	}
 }
 
+/**
+  This function initializes all kernels that are necessary for computation
+  */
 void Context::initKernels()
 {
 	try {
@@ -86,6 +95,9 @@ void Context::initKernels()
 	}
 }
 
+/**
+  This function cleans all kernel objects
+ */
 void Context::deinitKernels()
 {
 	delete m_mcProgram;

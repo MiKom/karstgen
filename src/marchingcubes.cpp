@@ -28,6 +28,9 @@ static const bool COMPACT_VOXELS_USE_ALL_CARDS = true;
 static const int GENERATE_TRIANGLES_THREADS_PER_WG = 32;
 static const int GENERATE_TRIANGLES_USE_ALL_CARDS = true;
 
+/**
+  \param scan pointer to object storing initialized scan program object
+*/
 MarchingCubes::MarchingCubes(
 	const cl::Context ctx,
 	const vector<cl::CommandQueue>& queues,
@@ -165,6 +168,17 @@ void MarchingCubes::launchGenerateTriangles(
 	}
 }
 
+/**
+  This function computes triangle mesh from scalar field described
+  by grid. Value that will be treated as the frontier of the isosurface
+  is passed in isoValue parameter.
+  
+  \param grid scalar field which describes isosurface
+  \param isoValue value that will be treated as a frontier of the
+  surface
+  \return simple structure containing pointers to vector of vertices
+  (triplets of coordinates) and normals (triplets of coordinates as well)
+*/
 MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 {
 	MCMesh ret = { vector<float3>(), vector<float3>()};

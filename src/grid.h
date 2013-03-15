@@ -4,11 +4,16 @@
 #include "mathtypes.h"
 
 /**
+  \brief Storage for 3D grid of values.
+  
   This class keeps values of computed density function at lattice vertices of a
   grid of voxels and at epsilon-distant positions along each axis (it's a
   gradient for normal vector calculations). The returned buffer is float4 buffer
   that keeps gradient values in xyz components, and density function value in w
   component.
+  
+  This class can be fed to MarchingCubes class to run Marching cubes algorithm
+  on the lattice.
   
   It can move data between RAM and VRAM.
   */
@@ -34,20 +39,9 @@ protected:
 	
 	Storage mStorage;
 	
-	/**
-	  This function calculates the number of data point on the grid that
-	  will be needed to keep the grid data. Basically, for x*y*z sized grid
-	  (in voxels in each dimension) you need (x+1) * (y+1) * (z+1) data
-	  points. This is a utility function to compute that.
-	  */
 	static unsigned int getFlatDataSize(const uint3& gridDim);
 public:
-	/**
-	  \param context OpenCL context within which this grid will operate
-	  \param cq OpenCL command queue (in the same context as context 
-	  parameter) that will be used to move data back and forth between the
-	  devices.
-	  */
+
 	Grid(
 		uint3 gridDim,
 		float3 voxelSize,
@@ -68,6 +62,8 @@ public:
 	cl::Buffer getValuesBuffer() const { return mValuesBuffer; }
 	
 	/**
+	  \brief Get current storage place.
+	  
 	  Get information about place where correct data is currently stored for
 	  this grid.
 	  */
