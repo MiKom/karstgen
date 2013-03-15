@@ -144,6 +144,29 @@ string buildLog(const cl::Program& program)
 	return os.str();
 }
 
+/**
+  This function return smallest integer larger or equal to globalSize
+  that is divisible by localSize. If globalSize % localSize equals 0 then
+  globalSize is returned.
+  
+  This should be used to round up global work size so it's divisible by
+  localSize as required by OpenCL.
+  
+  \param localSize size of local work group
+  \param globalSize global size of work
+  \return smallest integer greater than or equal to globalSize divisible by
+  localSize
+  */
+static size_t roundUp(int localSize, int globalSize)
+{
+	int r = globalSize % localSize;
+	if(r == 0) {
+		return globalSize;
+	} else {
+		return globalSize + localSize - r;
+	}
+}
+
 void run1DKernelMultipleQueues(
 	const cl::Kernel &kernel,
 	const std::vector<cl::CommandQueue> &queues,
