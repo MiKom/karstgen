@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
+#include "util.h"
 #include "common-test.h"
 
 class ClassifyTest : public CommonTest
@@ -15,7 +16,7 @@ class ClassifyTest : public CommonTest
 
 TEST_F(ClassifyTest, FlatSurfaceTest)
 {
-	const int dimLen = 256;
+	const int dimLen = 128;
 	const int sliceSize = dimLen * dimLen;
 	const int gridSize = dimLen * dimLen * dimLen;
 	
