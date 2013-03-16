@@ -225,23 +225,28 @@ void run1DKernelMultipleQueues(
 	const std::vector<cl::Event>* events)
 {
 	unsigned int devSize = globalSize / queues.size();
+	if(localSize > 0) {
+		globalSize = roundUp(localSize, globalSize);
+		uint groupsPerQueue = (globalSize / localSize) / queues.size();
+		devSize = groupsPerQueue * localSize;
+	}
 	vector<cl::Event> waitEvents;
 	for(int i=0; i < queues.size(); i++) {
 		const cl::CommandQueue& queue = queues[i];
 		cl::Event event;
 		
-		bool lastQueue = false;
 		//Check if it's last queue. It may have more work if globalSize
 		//was not evenly divisable by number of queues
 		if(i == (queues.size() - 1) ){
-			lastQueue = true;
+			devSize = globalSize - (devSize * i);
 		}
 		queue.enqueueNDRangeKernel(
 			kernel,
 			cl::NDRange(devSize * i),
-			(lastQueue ?
-				cl::NDRange(globalSize - (devSize * i)) :
-				cl::NDRange(devSize)
+			cl::NDRange(
+				localSize > 0 ? //is localSize user-defined ?
+					roundUp(localSize,devSize) :
+					devSize
 			),
 			(localSize > 0 ? cl::NDRange(localSize) : cl::NullRange),
 			events,
@@ -281,7 +286,11 @@ void run1DKernelSingleQueue(
 	queue.enqueueNDRangeKernel(
 		kernel,
 		cl::NullRange,
-		cl::NDRange(globalSize),
+		cl::NDRange(
+			localSize > 0 ?
+				roundUp(localSize,globalSize):
+				globalSize
+		),
 		(localSize > 0 ? cl::NDRange(localSize) : cl::NullRange),
 		events,
 		&event
