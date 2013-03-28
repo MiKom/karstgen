@@ -18,12 +18,12 @@ protected:
 	Scan           *m_scanProgram;
 	cl::Kernel     m_memSetKernel;
 	
-	void initCL();
+	void initCL(bool useAllDevices);
 	void initKernels();
 	
 	void deinitKernels();
 public:
-	Context();
+	Context(bool useAllDevices = true);
 	virtual ~Context();
 	
 	cl::Context&

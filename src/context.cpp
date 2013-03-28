@@ -15,9 +15,9 @@ utilKernelPath = "kernels/util.cl";
 static const string
 memSetKernelName = "memSet";
 
-Context::Context()
+Context::Context(bool useAllDevices)
 {
-	initCL();
+	initCL(useAllDevices);
 	initKernels();
 }
 
@@ -32,7 +32,7 @@ Context::~Context()
   This function initializes OpenCL context and command queue for each device
   available on the first platform returned by cl::Platform::get.
   */
-void Context::initCL()
+void Context::initCL(bool useAllDevices)
 {
 	vector<cl::Platform> platforms;
 	cl::Platform::get(&platforms);
@@ -71,10 +71,12 @@ void Context::initCL()
 	};
 	m_context = cl::Context(CL_DEVICE_TYPE_GPU, cps);
 	
-	
-	for(cl::Device &dev : devices) {
-		cl::CommandQueue q(m_context, dev);
-		m_queues.push_back(q);
+	if(useAllDevices) {
+		for(cl::Device &dev : devices) {
+			m_queues.push_back(cl::CommandQueue{m_context, dev});
+		}
+	} else {
+		m_queues.push_back(cl::CommandQueue{m_context, devices[0]});
 	}
 }
 
