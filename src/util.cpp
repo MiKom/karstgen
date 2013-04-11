@@ -282,6 +282,15 @@ void run1DKernelSingleQueue(
 	bool synchronous,
 	const vector<cl::Event> *events)
 {
+	run1DKernelMultipleQueues(
+		kernel,
+		vector<cl::CommandQueue> {queue},
+		globalSize,
+		localSize,
+		synchronous,
+		events
+	);
+	/*
 	cl::Event event;
 	queue.enqueueNDRangeKernel(
 		kernel,
@@ -298,4 +307,5 @@ void run1DKernelSingleQueue(
 	if(synchronous) {
 		event.wait();
 	}
+	*/
 }
