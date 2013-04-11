@@ -215,15 +215,15 @@ void generateTriangles(
 		edge = read_imageui(triTex, tableSampler, (int2)(i+2, cubeIndex)).x;
 		positions[2] = vertList[(edge*NTHREADS) + tid];
 		normals[2] = normList[(edge*NTHREADS) + tid];
-		if(index < (maxVerts - 3)) {
+		if(index <= (maxVerts - 3)) {
 			pos[index] = positions[0];
-			norm[index] = normals[0];
+			norm[index] = normalize(normals[0]);
 
 			pos[index+1] = positions[1];
-			norm[index+1] = normals[1];
+			norm[index+1] = normalize(normals[1]);
 
 			pos[index+2] = positions[2];
-			norm[index+2] = normals[2];
+			norm[index+2] = normalize(normals[2]);
 		}
 	}
 }
