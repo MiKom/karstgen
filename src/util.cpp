@@ -290,22 +290,4 @@ void run1DKernelSingleQueue(
 		synchronous,
 		events
 	);
-	/*
-	cl::Event event;
-	queue.enqueueNDRangeKernel(
-		kernel,
-		cl::NullRange,
-		cl::NDRange(
-			localSize > 0 ?
-				roundUp(localSize,globalSize):
-				globalSize
-		),
-		(localSize > 0 ? cl::NDRange(localSize) : cl::NullRange),
-		events,
-		&event
-	);
-	if(synchronous) {
-		event.wait();
-	}
-	*/
 }
