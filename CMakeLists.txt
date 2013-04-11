@@ -74,6 +74,9 @@ ENABLE_TESTING()
 INCLUDE_DIRECTORIES("src/")
 ADD_EXECUTABLE(01_simpleBlob ${KARSTGEN_SOURCES} tests/01_simpleBlob.cpp)
 TARGET_LINK_LIBRARIES( 01_simpleBlob ${OPENCL_LIBRARIES} )
+
+#TODO: Temporary hack until CMake module for AVR is written
+TARGET_LINK_LIBRARIES( 01_simpleBlob /usr/local/lib/libavr.so )
 ADD_TEST(NAME 01_simpleBlob COMMAND 01_simpleBlob)
 
 
@@ -93,6 +96,9 @@ IF(${GTEST_FOUND})
 			${TEST_COMMON_SOURCES}
 		)
 		TARGET_LINK_LIBRARIES(${executableName} ${GTEST_LIBRARIES} ${OPENCL_LIBRARIES} ${GTEST_MAIN_LIBRARY})
+
+		#TODO: Temporary hack until CMake module for AVR is written
+		TARGET_LINK_LIBRARIES(${executableName} /usr/local/lib/libavr.so)
 		ADD_TEST(NAME ${testName} COMMAND ${executableName})
 	ENDMACRO()
 
