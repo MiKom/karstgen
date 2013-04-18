@@ -3,6 +3,7 @@
 #include "grid.h"
 #include "blob.h"
 #include "marchingcubes.h"
+#include "exporters.h"
 #include "util.h"
 
 #include <iostream>
@@ -35,6 +36,10 @@ int main()
 		MarchingCubes* mc = ctx.getMcProgram();
 		MCMesh mcmesh = mc->compute(grid, 3.0f);
 		
+		vector<MCMesh*> meshes = {&mcmesh};
+		export_avr(meshes, "out.avr");
+		
+		/*
 		AVRMesh mesh;
 		mesh.setName("bloba");
 		mesh.addTextCoord(AVR::vec2{0.0f, 0.0f});
@@ -51,13 +56,13 @@ int main()
 		
 		AVRMaterial material;
 		material.setName("red");
-		material.setDiffuse(0.5f, 0.0f, 0.0f);
-		material.setSpecular(0.9f, 0.9f, 0.9f);
+		material.setDiffuse(0.5f, 0.5f, 0.5f);
+		material.setSpecular(0.0f, 0.0f, 0.0f);
 		material.setAmbient(0.0f, 0.0f, 0.0f);
-		material.setEmissive(1.0f, 0.0f, 0.0f);
+		material.setEmissive(0.5f, 0.5f, 0.5f);
 		material.setOpacity(1.0f);
-		material.setSpecularLevel(0.25f);
-		material.setGlossiness(0.15f);
+		material.setSpecularLevel(0.4f);
+		material.setGlossiness(0.0f);
 		
 		mesh.setMaterialId(0);
 		
@@ -66,6 +71,7 @@ int main()
 		file.addMesh(&mesh);
 		
 		file.save("out.avr");
+		*/
 		
 	} catch ( cl::Error &e ) {
 		cerr
