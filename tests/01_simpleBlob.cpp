@@ -39,7 +39,7 @@ int main()
 		vector<MCMesh*> meshes = {&mcmesh};
 		export_avr(meshes, "out.avr");
 		export_wavefront_obj(meshes, "out.obj");
-		
+	
 	} catch ( cl::Error &e ) {
 		cerr
 		  << "OpenCL runtime error at function " << endl
