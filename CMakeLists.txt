@@ -62,12 +62,17 @@ SET(KARSTGEN_SOURCES
 	src/context.h
 	src/context.cpp
 
+	src/exporters.h
+	src/exporters.cpp
+
 	src/mathtypes.h
 	src/tables.h
 )
 
 ADD_EXECUTABLE(karstgen ${KARSTGEN_SOURCES} src/karstgen.cpp )
 TARGET_LINK_LIBRARIES( karstgen ${OPENCL_LIBRARIES} )
+#TODO: Temporary hack until CMake module for AVR is written
+TARGET_LINK_LIBRARIES( karstgen /usr/local/lib/libavr.so )
 
 ENABLE_TESTING()
 
