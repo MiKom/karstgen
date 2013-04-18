@@ -52,7 +52,36 @@ void export_avr(vector<MCMesh*> meshes, std::string fileName)
 	}
 	
 }
-void export_wavefron_obj(vector<MCMesh*> meshes, std::string file)
+void export_wavefront_obj(vector<MCMesh*> meshes, std::string fileName)
 {
+	ofstream file;
+	file.exceptions(ofstream::failbit | ofstream::badbit);
+	file.open(fileName);
 	
+	for(int i{0}; i<meshes.size(); i++) {
+		MCMesh* mesh = meshes[i];
+		for(int j{0}; j < mesh->verts.size(); j++) {
+			float3 v = mesh->verts[j];
+			file << "v " << v.x << " " << v.y << " " << v.z << endl;
+		}
+	}
+	for(int i{0}; i<meshes.size(); i++) {
+		MCMesh* mesh = meshes[i];
+		for(int j{0}; j < mesh->normals.size(); j++) {
+			float3 v = mesh->normals[j];
+			file << "vn " << v.x << " " << v.y << " " << v.z << endl;
+		}
+	}
+	
+	int allVerts = 0;
+	for(int i{0}; i<meshes.size(); i++) {
+		allVerts += meshes[i]->verts.size();
+	}
+	
+	for(int i{1}; i<allVerts; i+=3) {
+		file << "f " 
+		     << i   << "//" << i   << " "
+		     << i+1 << "//" << i+1 << " "
+		     << i+2 << "//" << i+2 << endl;
+	}
 }
