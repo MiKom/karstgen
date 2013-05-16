@@ -123,8 +123,8 @@ void vertexInterp(
 	float t = (isoLevel - f1.w) / (f2.w - f1.w);
 
 	//Calculating normals from gradient
-	float4 norm1 = (float4) (f1.x - f1.w, f1.y - f1.w, f1.z - f1.w, 0.0f);
-	float4 norm2 = (float4) (f2.x - f2.w, f2.y - f2.w, f2.z - f2.w, 0.0f);
+	float4 norm1 = -1.0f * (float4) (f1.x - f1.w, f1.y - f1.w, f1.z - f1.w, 0.0f);
+	float4 norm2 = -1.0f * (float4) (f2.x - f2.w, f2.y - f2.w, f2.z - f2.w, 0.0f);
 
 	*pos = mix(p1, p2, t);
 	*norm = mix(norm1, norm1, t);
