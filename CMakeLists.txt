@@ -87,6 +87,7 @@ ADD_TEST(NAME 01_simpleBlob COMMAND 01_simpleBlob)
 
 FIND_PACKAGE(GTest)
 IF(${GTEST_FOUND})
+	FIND_PACKAGE(Threads)
 
 	INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIR})
 	SET(TEST_COMMON_SOURCES
@@ -100,7 +101,9 @@ IF(${GTEST_FOUND})
 			${testFiles}
 			${TEST_COMMON_SOURCES}
 		)
-		TARGET_LINK_LIBRARIES(${executableName} ${GTEST_LIBRARIES} ${OPENCL_LIBRARIES} ${GTEST_MAIN_LIBRARY})
+		TARGET_LINK_LIBRARIES(${executableName} ${GTEST_LIBRARIES} ${OPENCL_LIBRARIES} ${GTEST_MAIN_LIBRARY}
+			${CMAKE_THREAD_LIBS_INIT}
+		)
 
 		#TODO: Temporary hack until CMake module for AVR is written
 		TARGET_LINK_LIBRARIES(${executableName} /usr/local/lib/libavr.so)
