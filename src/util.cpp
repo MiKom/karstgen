@@ -225,12 +225,6 @@ void run1DKernelMultipleQueues(
 	const std::vector<cl::Event>* events)
 {
 	unsigned int devSize = globalSize / queues.size();
-	if(localSize > 0) {
-		globalSize = roundUp(localSize, globalSize);
-		uint groupsPerQueue = (globalSize / localSize) / queues.size();
-		devSize = groupsPerQueue * localSize;
-	}
-	vector<cl::Event> waitEvents;
 	for(int i=0; i < queues.size(); i++) {
 		const cl::CommandQueue& queue = queues[i];
 		cl::Event event;
