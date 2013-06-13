@@ -18,7 +18,7 @@ void export_avr(vector<MCMesh*> meshes, std::string fileName)
 	material.setDiffuse(0.5f, 0.5f, 0.5f);
 	material.setSpecular(0.0f, 0.0f, 0.0f);
 	material.setAmbient(0.0f, 0.0f, 0.0f);
-	material.setEmissive(0.5f, 0.5f, 0.5f);
+	material.setEmissive(0.0f, 0.0f, 0.0f);
 	material.setOpacity(1.0f);
 	material.setSpecularLevel(0.0f);
 	material.setGlossiness(0.0f);
