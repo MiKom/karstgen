@@ -4,7 +4,7 @@
 #include "abstractprogram.h"
 
 /**
-  \brief Excluse prefix sum scan operation.
+  \brief Exclusive prefix sum scan operation.
   
   This class can perform exclusive prefix sum or "scan" operation on an array
   of unsigned ints.
