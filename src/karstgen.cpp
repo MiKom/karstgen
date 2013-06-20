@@ -14,7 +14,12 @@ using namespace std;
 
 namespace po = boost::program_options;
 
-string outputFormat;
+enum class OutputFormat {
+	OUTPUT_FORMAT_OBJ,
+	OUTPUT_FORMAT_AVR
+} outputFormat = OutputFormat::OUTPUT_FORMAT_OBJ;
+
+string outputFormatString;
 string outputFile;
 string inputFile;
 
@@ -30,7 +35,7 @@ void parse_options(int argc, char** argv)
 	po::options_description desc("Available options");
 	desc.add_options()
 	    ("help", "Print this message")
-	    ("format,f", po::value<string>()->default_value(string("obj")),
+	    ("format,f", po::value<string>(&outputFormatString)->default_value(string("obj")),
 	  "Format of the file to be create (avr or obj)")
 	    ("output,o", po::value<string>(&outputFile),
 	  "Name of the file to which the mesh will be saved")
@@ -57,6 +62,15 @@ void parse_options(int argc, char** argv)
 	}
 	if(!vm.count("output")) {
 		throw runtime_error("No output file specified");
+		exit(1);
+	}
+	
+	if(outputFormatString == "avr") {
+		outputFormat = OutputFormat::OUTPUT_FORMAT_AVR;
+	} else if(outputFormatString == "obj") {
+		//already set as default
+	} else {
+		throw runtime_error("Unsupported file format");
 		exit(1);
 	}
 }
