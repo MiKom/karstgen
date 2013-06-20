@@ -56,7 +56,7 @@ void parse_options(int argc, char** argv)
 		exit(1);
 	}
 	if(!vm.count("output")) {
-		cerr << "No output file specified, aborting\n";
+		throw runtime_error("No output file specified");
 		exit(1);
 	}
 }
@@ -74,10 +74,10 @@ tuple<unique_ptr<float4[]>, int> read_input(istream& is)
 		is >> blobs[i].x >> blobs[i].y >> blobs[i].z >> blobs[i].w;
 	}
 	if(is.eof()) {
-		throw invalid_argument("EOF in input reached prematurely");
+		throw runtime_error("EOF in input reached prematurely");
 	}
 	if(is.bad()) {
-		throw invalid_argument("Input malformed");
+		throw runtime_error("Input malformed");
 	}
 	if(is.fail()) {
 		throw runtime_error("Input IO error");
@@ -133,11 +133,12 @@ int main(int argc, char** argv)
 		  << "Error code: "<< endl
 		  << errorString(e.err()) << endl;
 		return 1;
-	} catch (invalid_argument &e) {
-		cerr << "Invalid input: " << e.what() << "\n";
 	} catch (runtime_error &e) {
 		cerr <<"Runtime error: " <<  e.what() << "\n";
 		return 1;
+	} catch (...) {
+		cerr << "Unknown error\n";
+		return 255;
 	}
 	return 0;
 }
