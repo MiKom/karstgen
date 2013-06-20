@@ -55,20 +55,17 @@ void Blob::runBlob(const float4 *const blobs, int nBlobs, Grid &grid)
 			blobs
 		);
 		
-		//TODO: get rid of these variables
-		float4 startPos = grid.getStartPos();
-		uint4 gridSize = grid.getGridSize();
-		float4 voxelSize = grid.getVoxelSize();
-		cl::Buffer valuesBuffer = grid.getValuesBuffer();
-		cl_int nPoints = (gridSize.x + 1) * (gridSize.y + 1) * (gridSize.y + 1);
+		cl_int nPoints = (grid.getGridSize().x + 1) *
+		                 (grid.getGridSize().y + 1) *
+		                 (grid.getGridSize().z + 1);
 		
 		uint arg = 0;
-		mBlobValKernel.setArg(arg++, startPos);
-		mBlobValKernel.setArg(arg++, gridSize);
-		mBlobValKernel.setArg(arg++, voxelSize);
+		mBlobValKernel.setArg(arg++, grid.getStartPos());
+		mBlobValKernel.setArg(arg++, grid.getGridSize());
+		mBlobValKernel.setArg(arg++, grid.getVoxelSize());
 		mBlobValKernel.setArg(arg++, blobBuffer);
 		mBlobValKernel.setArg(arg++, nBlobs);
-		mBlobValKernel.setArg(arg++, valuesBuffer);
+		mBlobValKernel.setArg(arg++, grid.getValuesBuffer());
 		mBlobValKernel.setArg(arg++, nPoints);
 		
 		if(BLOB_USE_ALL_CARDS) {
