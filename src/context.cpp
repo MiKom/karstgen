@@ -42,14 +42,14 @@ void Context::initCL(bool useAllDevices)
 	cl::Platform platform = platforms[0];
 	string platformName;
 	platform.getInfo(CL_PLATFORM_NAME, &platformName);
-	cout << "First OpenCL platform is: " << platformName << endl;
+	cerr << "First OpenCL platform is: " << platformName << endl;
 	
 	vector<cl::Device> devices;
 	platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
 	if(devices.empty()) {
 		throw runtime_error("No GPU devices found on this platform");
 	}
-	cout << "OpenCL devices on this platform:" << endl;
+	cerr << "OpenCL devices on this platform:" << endl;
 	string devName, vendorName, devVersion, drvVersion;
 	for(int i=0; i<devices.size(); i++) {
 		cl::Device& dev = devices[i];
@@ -57,12 +57,12 @@ void Context::initCL(bool useAllDevices)
 		dev.getInfo(CL_DEVICE_NAME, &devName);
 		dev.getInfo(CL_DEVICE_VERSION, &devVersion);
 		dev.getInfo(CL_DRIVER_VERSION, &drvVersion);
-		cout << "Device " << i << endl;
-		cout << "---------------------------------" << endl;
-		cout << "Vendor:\t\t" << vendorName << endl;
-		cout << "Name:\t\t" << devName    << endl;
-		cout << "Device version:\t" << devVersion << endl;
-		cout << "Driver version:\t" << drvVersion << endl;
+		cerr << "Device " << i << endl;
+		cerr << "---------------------------------" << endl;
+		cerr << "Vendor:\t\t" << vendorName << endl;
+		cerr << "Name:\t\t" << devName    << endl;
+		cerr << "Device version:\t" << devVersion << endl;
+		cerr << "Driver version:\t" << drvVersion << endl;
 	}
 	
 	cl_context_properties cps[] = {
@@ -94,6 +94,7 @@ void Context::initKernels()
 	} catch (BuildError &e) {
 		cerr << e.what() << endl;
 		cerr << e.log() << endl;
+		throw e;
 	}
 }
 

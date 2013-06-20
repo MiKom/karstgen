@@ -55,7 +55,6 @@ void parse_options(int argc, char** argv)
 		cerr << desc << "\n";
 		exit(1);
 	}
-	
 	if(!vm.count("output")) {
 		cerr << "No output file specified, aborting\n";
 		exit(1);
@@ -73,6 +72,15 @@ tuple<unique_ptr<float4[]>, int> read_input(istream& is)
 	float4* blobs = new float4[nBlobs];
 	for(int i{0}; i<nBlobs; i++) {
 		is >> blobs[i].x >> blobs[i].y >> blobs[i].z >> blobs[i].w;
+	}
+	if(is.eof()) {
+		throw invalid_argument("EOF in input reached prematurely");
+	}
+	if(is.bad()) {
+		throw invalid_argument("Input malformed");
+	}
+	if(is.fail()) {
+		throw runtime_error("Input IO error");
 	}
 	return make_tuple(unique_ptr<float4[]>(blobs), nBlobs);
 }
@@ -104,7 +112,6 @@ int main(int argc, char** argv)
 {
 	try {
 		parse_options(argc, argv);
-		Context ctx;
 		
 		unique_ptr<float4[]> blobs;
 		int nBlobs;
@@ -116,14 +123,20 @@ int main(int argc, char** argv)
 		}
 		
 		find_boundaries(blobs.get(), nBlobs);
+		
+		Context ctx;
+		
 	} catch ( cl::Error &e ) {
 		cerr
 		  << "OpenCL runtime error at function " << endl
 		  << e.what() << endl
 		  << "Error code: "<< endl
 		  << errorString(e.err()) << endl;
+		return 1;
+	} catch (invalid_argument &e) {
+		cerr << "Invalid input: " << e.what() << "\n";
 	} catch (runtime_error &e) {
-		cerr << e.what();
+		cerr <<"Runtime error: " <<  e.what() << "\n";
 		return 1;
 	}
 	return 0;
