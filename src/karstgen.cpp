@@ -75,9 +75,6 @@ void parse_options(int argc, char** argv)
 	}
 }
 
-/**
-  \todo Error checking
-*/
 tuple<unique_ptr<float4[]>, int> read_input(istream& is)
 {
 	int nBlobs;
