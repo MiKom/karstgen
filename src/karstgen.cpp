@@ -23,6 +23,11 @@ string outputFormatString;
 string outputFile;
 string inputFile;
 
+float3 startPoint{0.0f, 0.0f, 0.0f};
+float3 blockSize{1.0f, 1.0f, 1.0f};
+uint logBlockDim{5}; //32 x 32 x 32
+uint3 gridConf{1, 1, 1};
+
 //static float maxX = 0.0f;
 //static float minX = 0.0f;
 //static float maxY = 0.0f;
@@ -36,23 +41,58 @@ void parse_options(int argc, char** argv)
 {
 	po::options_description desc("Available options");
 	desc.add_options()
-	    ("help", "Print this message")
+	    ("help,h", "Print this message")
 	    ("format,f", po::value<string>(&outputFormatString)->default_value(string("obj")),
 	  "Format of the file to be create (avr or obj)")
 	    ("output,o", po::value<string>(&outputFile),
 	  "Name of the file to which the mesh will be saved")
 	    ("input,i", po::value<string>(&inputFile)->default_value(string("-")),
-	  "Input file with blob data. First line should contain number of"
-	  "blobs that will follow. Each blob data is located on separate line."
-	  "Single blob data consists of four float values, its location as x,y,z"
-	  "coordinates and diameter.\n\n"
+	  "Input file with blob data and Marching cubes parameters\n"
+	  "If not specified, or speciefied as \"-\" will be read from standard input"
+	  "  First line should contain the starting point of the grid of blocks."
+	  "It should be expressed as three floating point numbers. This starting "
+	  "point will be a corner of the structure (here marked as 1):\n"
+	  "         +-------------+\n"
+	  "        /|            /|\n"
+	  "       / |           / |\n"
+	  "      +-------------+  |\n"
+	  "      |  |          |  |\n"
+	  "      |  |          |  |\n"
+	  "y  z  |  +----------|--+\n"
+	  "| /   | /           | / \n"
+	  "|/    |/            |/  \n"
+	  "+--x  +-------------+   \n"
+	  "     1                  \n\n"
+	  "  Second line should contain three integer numbers. This will be the size "
+	  "of the grid of blocks i.e. how many blocks are on each axis.\n"
+	  "  Third line should contain size of each block. Also expressed as three "
+	  "floating point numbers.\n"
+	  "  Fourth line should contain one integer n where which is log2 of size "
+	  "(in voxels) of each axis of each block. For example, if you want each "
+	  "block to be 256x256x256, n should be 8\n"
+	  "  Fifth line should be a single integer denoting number of blob"
+	  "descriptions that will follow. Each blob description is located on "
+	  "separate line. Single blob data consists of four float values, its "
+	  "location as x,y,z coordinates and diameter.\n\n"
 	  "Example:\n"
+	  "-1.0 0.0 2.0\n"
+	  "4 4 4\n"
+	  "10.0 10.0 10.0\n"
+	  "5\n"
 	  "3\n"
 	  "0.0 0.0 0.0 0.5\n"
 	  "1.0 1.0 1.0 0.7\n"
 	  "-1.0 2.0 0.9 0.3\n\n"
-	  "If not specified, will be read from standard input")
-	;
+	  "In the above example, structure starts at coordinates (-1,0,2), it's "
+	  "made of 64 (4x4x4) blocks, each of which is 10x10x10 units in size. "
+	  "Each block will be divided into 32x32x32 uniform voxels (because 2^5=32).\n"
+	  "There will be 3 blobs rendered with following parameters:\n"
+	  "  No.  |  x  |  y  |  z  | diameter \n"
+	  "-------+-----+-----+-----+----------\n"
+	  "   1   | 0.0 | 0.0 | 0.0 |    0.5   \n"
+	  "   2   | 1.0 | 1.0 | 1.0 |    0.7   \n"
+	  "   3   |-1.0 | 2.0 | 0.9 |    0.3   "
+	);
 	
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -79,6 +119,11 @@ void parse_options(int argc, char** argv)
 
 tuple<unique_ptr<float4[]>, int> read_input(istream& is)
 {
+	is >> startPoint.x >> startPoint.y >> startPoint.z;
+	is >> gridConf.x >> gridConf.y >> gridConf.z;
+	is >> blockSize.x >> blockSize.y >> blockSize.z;
+	is >> logBlockDim;
+	
 	int nBlobs;
 	is >> nBlobs;
 	
@@ -159,6 +204,9 @@ int main(int argc, char** argv)
 	} catch (runtime_error &e) {
 		cerr <<"Runtime error: " <<  e.what() << "\n";
 		return 1;
+	} catch (po::error& e) {
+		cerr << "Error parsing options: " << e.what() << "\n";
+		cerr << "See " << argv[0] << " --help\n";
 	} catch (...) {
 		cerr << "Unknown error\n";
 		return 255;
