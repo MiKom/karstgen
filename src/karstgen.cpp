@@ -23,12 +23,14 @@ string outputFormatString;
 string outputFile;
 string inputFile;
 
-static float maxX = 0.0f;
-static float minX = 0.0f;
-static float maxY = 0.0f;
-static float minY = 0.0f;
-static float maxZ = 0.0f;
-static float minZ = 0.0f;
+//static float maxX = 0.0f;
+//static float minX = 0.0f;
+//static float maxY = 0.0f;
+//static float minY = 0.0f;
+//static float maxZ = 0.0f;
+//static float minZ = 0.0f;
+//
+//static float minDiam = 0.0f;
 
 void parse_options(int argc, char** argv)
 {
@@ -96,28 +98,38 @@ tuple<unique_ptr<float4[]>, int> read_input(istream& is)
 	return make_tuple(unique_ptr<float4[]>(blobs), nBlobs);
 }
 
-void find_boundaries(float4* blobs, int nBlobs)
-{
-	maxX = blobs[0].x + blobs[0].w;
-	minX = blobs[0].x - blobs[0].w;
-	
-	maxY = blobs[0].y + blobs[0].w;
-	minY = blobs[0].y - blobs[0].w;
-	
-	maxZ = blobs[0].z + blobs[0].w;
-	minZ = blobs[0].z - blobs[0].w;
-	
-	for(int i{1}; i<nBlobs; i++) {
-		maxX = std::max(maxX, blobs[i].x + blobs[i].w);
-		minX = std::min(minX, blobs[i].x - blobs[i].w);
-		
-		maxY = std::max(maxY, blobs[i].y + blobs[i].w);
-		minY = std::min(minY, blobs[i].y - blobs[i].w);
-		
-		maxZ = std::max(maxZ, blobs[i].z + blobs[i].w);
-		minZ = std::min(minZ, blobs[i].z - blobs[i].w);
-	}
-}
+///**
+//  @brief find boundaries in which the domain should be enclosed
+//  
+//  Function iterates over all blobs and find maximal and minimal value on each
+//  axis of (center + diameter) the blob. Results are put in global variables.
+// */
+//void find_boundaries_and_smallest_blob(float4* blobs, int nBlobs)
+//{
+//	maxX = blobs[0].x + blobs[0].w;
+//	minX = blobs[0].x - blobs[0].w;
+//	
+//	maxY = blobs[0].y + blobs[0].w;
+//	minY = blobs[0].y - blobs[0].w;
+//	
+//	maxZ = blobs[0].z + blobs[0].w;
+//	minZ = blobs[0].z - blobs[0].w;
+//	
+//	minDiam = blobs[0].w;
+//	
+//	for(int i{1}; i<nBlobs; i++) {
+//		maxX = std::max(maxX, blobs[i].x + blobs[i].w);
+//		minX = std::min(minX, blobs[i].x - blobs[i].w);
+//		
+//		maxY = std::max(maxY, blobs[i].y + blobs[i].w);
+//		minY = std::min(minY, blobs[i].y - blobs[i].w);
+//		
+//		maxZ = std::max(maxZ, blobs[i].z + blobs[i].w);
+//		minZ = std::min(minZ, blobs[i].z - blobs[i].w);
+//		
+//		minDiam = std::min(minDiam, blobs[i].w);
+//	}
+//}
 
 int main(int argc, char** argv)
 {
@@ -133,7 +145,7 @@ int main(int argc, char** argv)
 			tie(blobs, nBlobs) = read_input(inputStream);
 		}
 		
-		find_boundaries(blobs.get(), nBlobs);
+		//find_boundaries_and_smallest_blob(blobs.get(), nBlobs);
 		
 		Context ctx;
 		
