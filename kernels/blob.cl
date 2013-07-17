@@ -42,10 +42,9 @@ blobValue(
 	float4 blob;
 	float tmpVal;
 	float3 tmpNorm;
-	float denom;
 	for(int i=0; i<nBlobs; i++) {
 		blob = blobs[i];
-		denom = 
+		blob.w *= blob.w; //WARNING: hack to make blobs roughly the same diameter as w parameter
 		tmpVal = blob.w / max((pown(pos.x - blob.x, 2) + pown(pos.y - blob.y, 2) + pown(pos.z - blob.z, 2)), DIV_EPSILON);
 		val += tmpVal;
 		
