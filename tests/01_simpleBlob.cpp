@@ -36,7 +36,7 @@ int main()
 		MarchingCubes* mc = ctx.getMcProgram();
 		MCMesh mcmesh = mc->compute(grid, 3.0f);
 		
-		vector<MCMesh*> meshes = {&mcmesh};
+		vector<MCMesh> meshes {mcmesh};
 		export_avr(meshes, "out.avr");
 		export_wavefront_obj(meshes, "out.obj");
 	
