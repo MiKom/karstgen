@@ -7,7 +7,11 @@
 #include <boost/program_options.hpp>
 
 #include "util.h"
+#include "grid.h"
 #include "context.h"
+#include "marchingcubes.h"
+#include "blob.h"
+#include "exporters.h"
 
 using namespace AVR;
 using namespace std;
@@ -23,10 +27,11 @@ string outputFormatString;
 string outputFile;
 string inputFile;
 
-float3 startPoint{0.0f, 0.0f, 0.0f};
-float3 blockSize{1.0f, 1.0f, 1.0f};
-uint logBlockDim{5}; //32 x 32 x 32
-uint3 gridConf{1, 1, 1};
+//Input data
+static float3 startPoint{0.0f, 0.0f, 0.0f};
+static float3 blockSize{1.0f, 1.0f, 1.0f};
+static unsigned int logBlockDim{5}; //32 x 32 x 32
+static uint3 gridConf{1, 1, 1};
 
 //static float maxX = 0.0f;
 //static float minX = 0.0f;
@@ -48,7 +53,7 @@ void parse_options(int argc, char** argv)
 	  "Name of the file to which the mesh will be saved")
 	    ("input,i", po::value<string>(&inputFile)->default_value(string("-")),
 	  "Input file with blob data and Marching cubes parameters\n"
-	  "If not specified, or speciefied as \"-\" will be read from standard input"
+	  "If not specified, or speciefied as \"-\" will be read from standard input\n"
 	  "  First line should contain the starting point of the grid of blocks."
 	  "It should be expressed as three floating point numbers. This starting "
 	  "point will be a corner of the structure (here marked as 1):\n"
@@ -117,7 +122,8 @@ void parse_options(int argc, char** argv)
 	}
 }
 
-tuple<unique_ptr<float4[]>, int> read_input(istream& is)
+tuple<unique_ptr<float4[]>, int>
+read_input(istream& is)
 {
 	is >> startPoint.x >> startPoint.y >> startPoint.z;
 	is >> gridConf.x >> gridConf.y >> gridConf.z;
@@ -176,6 +182,8 @@ tuple<unique_ptr<float4[]>, int> read_input(istream& is)
 //	}
 //}
 
+
+
 int main(int argc, char** argv)
 {
 	try {
@@ -193,6 +201,49 @@ int main(int argc, char** argv)
 		//find_boundaries_and_smallest_blob(blobs.get(), nBlobs);
 		
 		Context ctx;
+		
+		//Main algorithm
+		
+		vector<MCMesh> meshes;
+		
+		uint3 gridDim = uint3((uint)1 << logBlockDim);
+		
+		float3 voxelSize{
+			blockSize.x / gridDim.x,
+			blockSize.y / gridDim.y,
+			blockSize.z / gridDim.z
+		};
+		for(int i=0; i<gridConf.x; i++) {
+			for(int j=0; j<gridConf.y; j++){
+				for(int k=0; k<gridConf.z; k++){
+					float3 blockStart {
+						startPoint.x + blockSize.x * i,
+						startPoint.y + blockSize.y * j,
+						startPoint.z + blockSize.z * k,
+						1.0f
+					};
+					Grid grid{
+						gridDim,
+						voxelSize,
+						blockStart,
+						ctx.getClContext(),
+						ctx.getQueues()[0]
+					};
+					ctx.getBlobProgram()->runBlob(blobs.get(), nBlobs, grid);
+					MarchingCubes* mc = ctx.getMcProgram();
+					meshes.push_back(mc->compute(grid, 1.0f));
+				}
+			}
+		}
+		
+		switch(outputFormat) {
+		case OutputFormat::OUTPUT_FORMAT_AVR:
+			export_avr(meshes, outputFile);
+			break;
+		case OutputFormat::OUTPUT_FORMAT_OBJ:
+		default:
+			export_wavefront_obj(meshes, outputFile);
+		}
 		
 	} catch ( cl::Error &e ) {
 		cerr
