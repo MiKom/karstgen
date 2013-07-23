@@ -217,6 +217,10 @@ MCMesh MarchingCubes::compute(Grid &grid, float isoValue)
 	);
 	int activeVoxels = lastElement + lastScanElement;
 	
+	if(activeVoxels == 0) {
+		return ret;
+	}
+	
 	// Compacting array of occupied voxels
 	cl::Buffer compactedVoxelArray = cl::Buffer(
 		mContext, CL_MEM_READ_WRITE, sizeof(uint) * activeVoxels);
