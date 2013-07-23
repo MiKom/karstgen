@@ -206,7 +206,7 @@ int main(int argc, char** argv)
 		
 		vector<MCMesh> meshes;
 		
-		uint3 gridDim = uint3((uint)1 << logBlockDim);
+		uint3 gridDim = uint3(static_cast<uint>(1) << logBlockDim);
 		
 		float3 voxelSize{
 			blockSize.x / gridDim.x,
