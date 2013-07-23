@@ -34,7 +34,7 @@ int main()
 		
 		
 		MarchingCubes* mc = ctx.getMcProgram();
-		MCMesh mcmesh = mc->compute(grid, 3.0f);
+		MCMesh mcmesh = mc->compute(grid, 1.0f);
 		
 		vector<MCMesh> meshes {mcmesh};
 		export_avr(meshes, "out.avr");
