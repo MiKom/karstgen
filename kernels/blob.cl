@@ -59,25 +59,3 @@ blobValue(
 		values[tid] += (float4) (norm.x, norm.y, norm.z, val);
 	}
 }
-
-__kernel void
-calculateNormalsFromGradient(
-	float4 startPoint,
-	uint4 gridSize,
-	__global float4* values,
-	int nPoints
-	)
-{
-	uint tid = get_global_id(0);
-	float3 norm;
-	norm.x = values[tid].x - values[tid].w;
-	norm.y = values[tid].y - values[tid].w;
-	norm.z = values[tid].z - values[tid].w;
-	norm = normalize(norm);
-	if(tid < nPoints) {
-		values[tid].x = norm.x;
-		values[tid].y = norm.y;
-		values[tid].z = norm.z;
-	}
-	
-}

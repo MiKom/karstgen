@@ -19,7 +19,6 @@ Blob::Blob(
 	: AbstractProgram(sPath, context, commandQueues)
 {
 	mBlobValKernel = cl::Kernel(mProgram, "blobValue");
-	mNormalsKernel = cl::Kernel(mProgram, "calculateNormalsFromGradient");
 	cl::CommandQueue q = commandQueues[0];
 	cl::Device dev;
 	q.getInfo(CL_QUEUE_DEVICE, &dev);
