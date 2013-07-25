@@ -15,7 +15,7 @@ IF(${CMAKE_COMPILER_IS_GNUCXX})
 	ENDIF(${CMAKE_COMPILER_IS_GNUCXX})
 
 
-FILE(COPY kernels DESTINATION ${PROJECT_BINARY_DIR})
+FILE(COPY src/karstgen/kernels DESTINATION ${PROJECT_BINARY_DIR})
 
 OPTION(BUILD_DOCUMENTATION "Use Doxygen to create HTML API documentation" ON)
 IF(BUILD_DOCUMENTATION)
@@ -42,41 +42,41 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 INCLUDE_DIRECTORIES( "include/" )
 
 SET(KARSTGEN_SOURCES
-	src/config.h
+	src/karstgen/config.h
 	
-	src/abstractprogram.h
-	src/abstractprogram.cpp
+	src/karstgen/abstractprogram.h
+	src/karstgen/abstractprogram.cpp
 	
-	src/grid.h
-	src/grid.cpp
+	src/karstgen/grid.h
+	src/karstgen/grid.cpp
 
-	src/marchingcubes.h
-	src/marchingcubes.cpp
-	kernels/marchingcubes.cl
+	src/karstgen/marchingcubes.h
+	src/karstgen/marchingcubes.cpp
+	src/karstgen/kernels/marchingcubes.cl
 
-	src/scan.h
-	src/scan.cpp
-	kernels/scan.cl
+	src/karstgen/scan.h
+	src/karstgen/scan.cpp
+	src/karstgen/kernels/scan.cl
 
-	kernels/util.cl
+	src/karstgen/kernels/util.cl
 
-	src/blob.h
-	src/blob.cpp
-	kernels/blob.cl
+	src/karstgen/blob.h
+	src/karstgen/blob.cpp
+	src/karstgen/kernels/blob.cl
 
-	src/util.h
-	src/util.cpp
-	src/context.h
-	src/context.cpp
+	src/karstgen/util.h
+	src/karstgen/util.cpp
+	src/karstgen/context.h
+	src/karstgen/context.cpp
 
-	src/exporters.h
-	src/exporters.cpp
+	src/karstgen/exporters.h
+	src/karstgen/exporters.cpp
 
-	src/mathtypes.h
-	src/tables.h
+	src/karstgen/mathtypes.h
+	src/karstgen/tables.h
 )
 
-ADD_EXECUTABLE(karstgen ${KARSTGEN_SOURCES} src/karstgen.cpp )
+ADD_EXECUTABLE(karstgen ${KARSTGEN_SOURCES} src/karstgen/karstgen.cpp )
 TARGET_LINK_LIBRARIES( karstgen ${OPENCL_LIBRARIES} )
 TARGET_LINK_LIBRARIES( karstgen ${Boost_LIBRARIES} )
 
@@ -85,7 +85,7 @@ TARGET_LINK_LIBRARIES( karstgen /usr/local/lib/libavr.so )
 
 ENABLE_TESTING()
 
-INCLUDE_DIRECTORIES("src/")
+INCLUDE_DIRECTORIES("src/karstgen/")
 ADD_EXECUTABLE(01_simpleBlob ${KARSTGEN_SOURCES} tests/01_simpleBlob.cpp)
 TARGET_LINK_LIBRARIES( 01_simpleBlob ${OPENCL_LIBRARIES} )
 
