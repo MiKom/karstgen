@@ -124,3 +124,8 @@ IF(${GTEST_FOUND})
 	REGISTER_TEST(compact-voxels-test tests/compact-voxels-test.cpp compact-voxels-test)
 	REGISTER_TEST(marching-cubes-test tests/marching-cubes-test.cpp marching-cubes-test)
 ENDIF()
+
+#
+# Blobber
+#
+ADD_EXECUTABLE(blobber src/blobber/blobber.cpp)
