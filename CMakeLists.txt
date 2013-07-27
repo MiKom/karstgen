@@ -23,10 +23,19 @@ IF(BUILD_DOCUMENTATION)
 	IF(NOT_DOXYGEN_FOUND)
 		MESSAGE(FATAL_ERROR "Doxygen is needed to build the documentation")
 	ENDIF()
-	CONFIGURE_FILE(Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile @ONLY IMMEDIATE)
+	
+	#TODO: Unify documentation generation. Either one Doxyfile for whole project
+	#divided into modules or abstract cmake targets and make doc for each
+	#executable
+	
+	CONFIGURE_FILE(src/karstgen/Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile_karstgen @ONLY IMMEDIATE)
+	CONFIGURE_FILE(src/blobber/Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile_blobber @ONLY IMMEDIATE)
 	ADD_CUSTOM_TARGET(doc
-		COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile
-		SOURCES ${PROJECT_BINARY_DIR}/Doxyfile
+		COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile_karstgen
+		SOURCES src/karstgen/Doxyfile.in
+
+		COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile_blobber
+		SOURCES src/blobber/Doxyfile.in
 	)
 ENDIF()
 
@@ -129,3 +138,4 @@ ENDIF()
 # Blobber
 #
 ADD_EXECUTABLE(blobber src/blobber/blobber.cpp)
+TARGET_LINK_LIBRARIES( blobber ${Boost_LIBRARIES} )
