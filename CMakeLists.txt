@@ -137,5 +137,9 @@ ENDIF()
 #
 # Blobber
 #
-ADD_EXECUTABLE(blobber src/blobber/blobber.cpp)
+SET( BLOBBER_SOURCES
+	src/blobber/fracturenet.h
+)
+
+ADD_EXECUTABLE(blobber ${BLOBBER_SOURCES} src/blobber/blobber.cpp)
 TARGET_LINK_LIBRARIES( blobber ${Boost_LIBRARIES} )

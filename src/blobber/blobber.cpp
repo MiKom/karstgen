@@ -71,12 +71,17 @@
 #include<string>
 #include<boost/program_options.hpp>
 
+#include"fracturenet.h"
+
 namespace po = boost::program_options;
 using namespace std;
 
 //Variables for parameters
 static string outputFile = "-";
 static string inputFile = "-";
+
+//Storage for input data
+FractureNet fractureNet;
 
 void parse_options(int argc, char** argv)
 {
@@ -102,9 +107,64 @@ void parse_options(int argc, char** argv)
 	}
 }
 
+DataPoint
+readDataPoint(istream& is)
+{
+	DataPoint ret;
+	
+	is >> ret.x >> ret.y >> ret.z;
+	is >> ret.nX >> ret.nY >> ret.nZ;
+	
+	for(int i=0; i<ret.nX; i++){
+		is >> ret.xData[i];
+	}
+	for(int i=0; i<ret.nY; i++){
+		is >> ret.yData[i];
+	}
+	for(int i=0; i<ret.nZ; i++){
+		is >> ret.zData[i];
+	}
+}
+
+void
+read_input(istream& is)
+{
+
+	is >> fractureNet.x >> fractureNet.y >> fractureNet.z;
+	int nDataPoints;
+	is >> nDataPoints;
+	
+	fractureNet.dataPoints.resize(nDataPoints);
+	
+	for(int i=0; i<nDataPoints; i++){
+		fractureNet.dataPoints.push_back(readDataPoint(is));
+	}
+	
+	if(is.eof()) {
+		throw runtime_error("EOF in input reached prematurely");
+	}
+	if(is.bad()) {
+		throw runtime_error("Input malformed");
+	}
+	if(is.fail()) {
+		throw runtime_error("Input IO error");
+	}
+}
+
 int main(int argc, char** argv)
 {
-	parse_options(argc, argv);
-	
+	try {
+		parse_options(argc, argv);
+	} catch (runtime_error &e) {
+		cerr <<"Runtime error: " <<  e.what() << "\n";
+		return 1;
+	} catch (po::error& e) {
+		cerr << "Error parsing options: " << e.what() << "\n";
+		cerr << "See " << argv[0] << " --help\n";
+	} catch (...) {
+		cerr << "Unknown error\n";
+		return 255;
+	}
+
 	return 0;
 }
