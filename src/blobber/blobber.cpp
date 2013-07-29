@@ -21,6 +21,9 @@
   In the second line, three integers \c x_num, \c y_num and \c z_num are present.
   These three values denote number of diameter data points in each axis.
   
+  In the third line, there is a single float \c diam_mid that denotes diameter 
+  of the sphere in the junction point of the three axes.
+  
   After that, <tt>x_num*y_num*z_num</tt> floats appear. First there are \c x_num
   floats for \c x direction, then \c y_num floats for \c y direction and \c
   z_num floats for \c z direction.
@@ -36,18 +39,22 @@
   num_entries
   x_pos y_pos z_pos --------------+
   x_num y_num z_num               |
+  diam_mid                        |
   diam_x_1 -----+                 |
   diam_x_2      |                 |
-  ...           +-x_num entries   |
+  .             +-x_num entries   |
+  .             |                 |
   damx_x_x_num--+                 |
   diam_y_1 -----+                 +--- num_entries times
   diam_y_2      |                 |
-  ...           +-y_num entries   |
+  .             +-y_num entries   |
+  .             |                 |
   damx_y_y_num--+                 |
   diam_z_1 -----+                 |
   diam_z_2      |                 |
-  ...           +-x_num entries   |
-  damx_z_z_num--+-----------------|
+  .             +-x_num entries   |
+  .             |                 |
+  damx_z_z_num--+-----------------+
   \endverbatim
   
   Example:
@@ -58,17 +65,22 @@
   1 0 1
   0.5
   0.5
+  0.5
   1 0 0
   0 1 0
   0.5
+  0.5
   1 1 0
   0 1 0
+  0.5
   0.5
   \endverbatim
   
   */
 #include<iostream>
+#include<fstream>
 #include<string>
+#include<tuple>
 #include<boost/program_options.hpp>
 
 #include"fracturenet.h"
@@ -113,17 +125,26 @@ readDataPoint(istream& is)
 	DataPoint ret;
 	
 	is >> ret.x >> ret.y >> ret.z;
-	is >> ret.nX >> ret.nY >> ret.nZ;
+	int nX, nY, nZ;
+	is >> nX >> nY >> nZ;
 	
-	for(int i=0; i<ret.nX; i++){
+	ret.xData.reserve(nX);
+	ret.yData.reserve(nY);
+	ret.zData.reserve(nZ);
+	 
+	is >> ret.midDiam;
+	
+	float tmp;
+	for(int i=0; i<nX; i++){
 		is >> ret.xData[i];
 	}
-	for(int i=0; i<ret.nY; i++){
+	for(int i=0; i<nY; i++){
 		is >> ret.yData[i];
 	}
-	for(int i=0; i<ret.nZ; i++){
+	for(int i=0; i<nZ; i++){
 		is >> ret.zData[i];
 	}
+	return ret;
 }
 
 void
@@ -134,10 +155,9 @@ read_input(istream& is)
 	int nDataPoints;
 	is >> nDataPoints;
 	
-	fractureNet.dataPoints.resize(nDataPoints);
-	
 	for(int i=0; i<nDataPoints; i++){
-		fractureNet.dataPoints.push_back(readDataPoint(is));
+		DataPoint&& dp = readDataPoint(is);
+		fractureNet.dataPoints[make_tuple(dp.x, dp.y, dp.z)] = dp;
 	}
 	
 	if(is.eof()) {
@@ -155,6 +175,19 @@ int main(int argc, char** argv)
 {
 	try {
 		parse_options(argc, argv);
+		
+		if(inputFile == "-") {
+			read_input(cin);
+		} else {
+			ifstream inputStream(inputFile);
+			read_input(inputStream);
+		}
+		
+		for(auto& elem : fractureNet.dataPoints) {
+			DataPoint& dp = elem.second;
+			cout << "Data point at: " << dp.x << ", " << dp.y << ", " << dp.z << "\n";
+		}
+		
 	} catch (runtime_error &e) {
 		cerr <<"Runtime error: " <<  e.what() << "\n";
 		return 1;
