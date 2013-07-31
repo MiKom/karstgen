@@ -8,7 +8,11 @@
   On the first line there are tree integers \c x_size \c y_size and \c z_size.
   These three integers denote size of the fracture net in each dimension
   
-  Second line contains single integer \c num_entries that denotes number of
+  Second line contains three floating point numbers <tt>x_length y_length</tt>
+  and \c z_length that denote lenghts of fractures
+  in each data point in <tt>x, y</tt> and \c z directions respectively.
+  
+  Third line contains single integer \c num_entries that denotes number of
   of data entries. Single data entry describes diameters of fractures originating
   in one point and going in positive \c x, \c y and \c z directions.
   
@@ -36,6 +40,7 @@
   General output structure:
   \verbatim
   x_size y_size z_size
+  x_lenght y_length z_length
   num_entries
   x_pos y_pos z_pos --------------+
   x_num y_num z_num               |
@@ -60,6 +65,7 @@
   Example:
   \verbatim
   2 2 2
+  5.0 5.0 5.0
   3
   0 0 0
   1 0 1
@@ -81,6 +87,7 @@
 #include<fstream>
 #include<string>
 #include<tuple>
+#include<cmath>
 #include<boost/program_options.hpp>
 
 #include"fracturenet.h"
@@ -88,12 +95,19 @@
 namespace po = boost::program_options;
 using namespace std;
 
+//Constant parameters
+
 //Variables for parameters
 static string outputFile = "-";
 static string inputFile = "-";
 
+/**
+ * @brief How many blocks for Marching cubes are thereg onna be on X axis
+ */
+static int g_blocksOnX = 10;
+
 //Storage for input data
-FractureNet fractureNet;
+static FractureNet fractureNet;
 
 void parse_options(int argc, char** argv)
 {
@@ -107,7 +121,11 @@ void parse_options(int argc, char** argv)
 	                ("input,i", po::value<string>(&inputFile),
 	                 "Input file with fracture net data. "
 	                 "If not specified or spedcified as \"-\" output will "
-	                 "be written to standard output");
+	                 "be written to standard output")
+	                ("blocksOnX,b", po::value<int>(&g_blocksOnX)->default_value(10),
+	                 "How many blocks for marching cubes algorithm will be "
+	                 "present along X axis. Number on other axes will be "
+	                 "proportional.");
 	
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -148,10 +166,11 @@ readDataPoint(istream& is)
 }
 
 void
-read_input(istream& is)
+readInput(istream& is)
 {
 
 	is >> fractureNet.x >> fractureNet.y >> fractureNet.z;
+	is >> fractureNet.xLen >> fractureNet.yLen >> fractureNet.zLen;
 	int nDataPoints;
 	is >> nDataPoints;
 	
@@ -171,21 +190,42 @@ read_input(istream& is)
 	}
 }
 
+/**
+ * @brief blobber main algorithm
+ */
+void blobber(ostream& os)
+{
+	float xBlockLen = fractureNet.dimensionLength(Dimension::DIM_X) / g_blocksOnX;
+	
+	float xLen = fractureNet.dimensionLength(Dimension::DIM_X);
+	float yLen = fractureNet.dimensionLength(Dimension::DIM_Y);
+	float zLen = fractureNet.dimensionLength(Dimension::DIM_Z);
+	
+	int blocksOnX = g_blocksOnX;
+	int blocksOnY = static_cast<int>(std::ceil(yLen / xBlockLen));
+	int blocksOnZ = static_cast<int>(std::ceil(zLen / xBlockLen));
+	
+	//TODO: finish blobber algorithm
+	
+}
+
 int main(int argc, char** argv)
 {
 	try {
 		parse_options(argc, argv);
 		
 		if(inputFile == "-") {
-			read_input(cin);
+			readInput(cin);
 		} else {
 			ifstream inputStream(inputFile);
-			read_input(inputStream);
+			readInput(inputStream);
 		}
 		
-		for(auto& elem : fractureNet.dataPoints) {
-			DataPoint& dp = elem.second;
-			cout << "Data point at: " << dp.x << ", " << dp.y << ", " << dp.z << "\n";
+		if(outputFile == "-") {
+			blobber(cout);
+		} else {
+			ofstream outputStream(outputFile);
+			blobber(outputStream);
 		}
 		
 	} catch (runtime_error &e) {
