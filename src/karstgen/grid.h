@@ -1,7 +1,7 @@
 #ifndef __KARSTGEN_GRID_H__
 #define __KARSTGEN_GRID_H__
 
-#include "mathtypes.h"
+#include "common/mathtypes.h"
 
 /**
   \brief Storage for 3D grid of values.

@@ -1,5 +1,5 @@
-#ifndef __KARSTGEN_MATH_H__
-#define __KARSTGEN_MATH_H__
+#ifndef __KARSTGEN_COMMON_MATH_H__
+#define __KARSTGEN_COMMON_MATH_H__
 
 #include <ostream>
 

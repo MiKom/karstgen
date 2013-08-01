@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "abstractprogram.h"
-#include "mathtypes.h"
+#include "common/mathtypes.h"
 
 class Grid;
 

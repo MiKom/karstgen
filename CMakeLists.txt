@@ -49,6 +49,7 @@ FIND_PACKAGE(Boost 1.50 COMPONENTS program_options REQUIRED)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 INCLUDE_DIRECTORIES( "include/" )
+INCLUDE_DIRECTORIES( "src/" )
 
 SET(KARSTGEN_SOURCES
 	src/karstgen/config.h
@@ -81,7 +82,6 @@ SET(KARSTGEN_SOURCES
 	src/karstgen/exporters.h
 	src/karstgen/exporters.cpp
 
-	src/karstgen/mathtypes.h
 	src/karstgen/tables.h
 )
 

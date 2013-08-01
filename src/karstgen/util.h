@@ -1,7 +1,7 @@
 #ifndef __KARSTGEN_UTIL_H__
 #define __KARSTGEN_UTIL_H__
 
-#include "mathtypes.h"
+#include "common/mathtypes.h"
 
 #include <cstdio>
 #include <string>
