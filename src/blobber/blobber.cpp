@@ -97,18 +97,19 @@ namespace po = boost::program_options;
 using namespace std;
 
 //Constant parameters
+static const int BLOCK_LOG_SIZE = 5;
 
 //Variables for parameters
 static string outputFile = "-";
 static string inputFile = "-";
+static int randomSeed = 1;
 
 /**
- * @brief How many blocks for Marching cubes are thereg onna be on X axis
+ * \brief How many blocks for Marching cubes are there gonna be on X axis
  */
 static int g_blocksOnX = 10;
 
-//Storage for input data
-static FractureNet fractureNet;
+static FractureNet fractureNet; //!< Storage for input data
 
 void parse_options(int argc, char** argv)
 {
@@ -166,6 +167,15 @@ readDataPoint(istream& is)
 	return ret;
 }
 
+/**
+ * @brief Read data from input and save for processing
+ *
+ * Data is read from provided input stream and saved to \ref fractureNet global
+ * variable for processing.
+ *
+ * @param is inputstream to read from
+ *
+ */
 void
 readInput(istream& is)
 {
@@ -191,6 +201,49 @@ readInput(istream& is)
 	}
 }
 
+vector<float2>
+blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDiam, float vectorLen)
+{
+	float pos = firstPointDiam / 2.0;
+	float limit = vectorLen - nextDpMidDiam / 2.0f;
+	int nPoints = data.size() + 1;
+	while (pos <= limit) {
+		//Calculate between which two data points will this blob fall
+		int left = static_cast<int>(std::floor(pos / static_cast<float>(nPoints)));
+		int right = static_cast<int>(std::ceil(pos / static_cast<float>(nPoints)));
+		
+		if(left == 0) {
+			
+		}
+		//TODO: finish
+	}
+}
+
+vector<float2>
+mockBlobsOnVector(float fristPointDiam, const vector<float>& data, float lastPoint, float vectorLen)
+{
+	
+}
+
+/**
+ * @brief Calculate blobs for one datapoint
+ *
+ * This function will calculate list of blobs for given data point. Note however
+ * that output will have intersection of axes attached at origin (0,0,0). Axe
+ * X goes in positive direction, Y in negative (considered downwards) and Z in
+ * positive (considered away from the viewer).
+ *
+ * @param dp data point to extract blobs from
+ * @return vector with blobs generated from this data point.
+ */
+vector<float4>
+blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn, float3 axesLengths)
+{
+	vector<float4> ret;
+	//TODO: Finish
+	return ret;
+}
+
 /**
  * @brief blobber main algorithm
  */
@@ -206,8 +259,23 @@ void blobber(ostream& os)
 	int blocksOnY = static_cast<int>(std::ceil(yLen / xBlockLen));
 	int blocksOnZ = static_cast<int>(std::ceil(zLen / xBlockLen));
 	
-	//TODO: finish blobber algorithm
+	//print starting point. Bottom of the structure will be on y = 0.0
+	os << xLen / 2.0f << " " << 0.0f << " " << zLen / 2.0f << "\n";
 	
+	//Print number of blocks on each axis
+	os << blocksOnX << " " << blocksOnY << " " << blocksOnZ << "\n";
+	
+	//Print size of block on each axis
+	os << xLen / blocksOnX << " " << yLen / blocksOnY << " " << zLen / blocksOnZ << "\n";
+	os << BLOCK_LOG_SIZE << "\n";
+	
+	float3 startPoint{-xLen / 2.0f, yLen, -zLen / 2.0f};
+	vector<float4> blobs;
+	
+	for(auto& elem: fractureNet.dataPoints) {
+		DataPoint& dp = elem.second;
+		//TODO: Finish
+	}
 }
 
 int main(int argc, char** argv)

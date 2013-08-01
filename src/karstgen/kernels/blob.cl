@@ -44,6 +44,7 @@ blobValue(
 	float3 tmpNorm;
 	for(int i=0; i<nBlobs; i++) {
 		blob = blobs[i];
+		blob.w /= 2.0f; //HACK: we have diameter in parameter, but equations in form below treat .w as radius
 		blob.w *= blob.w; //WARNING: hack to make blobs roughly the same diameter as w parameter
 		tmpVal = blob.w / max((pown(pos.x - blob.x, 2) + pown(pos.y - blob.y, 2) + pown(pos.z - blob.z, 2)), DIV_EPSILON);
 		val += tmpVal;
