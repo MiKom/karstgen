@@ -237,12 +237,6 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 	return ret;
 }
 
-vector<glm::vec2>
-mockBlobsOnVector(float fristPointDiam, const vector<float>& data, float lastPoint, float vectorLen)
-{
-	
-}
-
 /**
  * @brief Calculate blobs for one datapoint
  *
