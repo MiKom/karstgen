@@ -89,6 +89,7 @@
 #include<tuple>
 #include<cmath>
 #include<boost/program_options.hpp>
+#include<glm/glm.hpp>
 
 #include"fracturenet.h"
 #include"common/mathtypes.h"
@@ -201,9 +202,15 @@ readInput(istream& is)
 	}
 }
 
-vector<float2>
+vector<glm::vec2>
 blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDiam, float vectorLen)
 {
+	vector<glm::vec2> ret;
+	
+	if(data.empty()) {
+		return ret;
+	}
+	
 	float pos = firstPointDiam / 2.0;
 	float limit = vectorLen - nextDpMidDiam / 2.0f;
 	int nPoints = data.size() + 1;
@@ -217,9 +224,11 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 		}
 		//TODO: finish
 	}
+	
+	return ret;
 }
 
-vector<float2>
+vector<glm::vec2>
 mockBlobsOnVector(float fristPointDiam, const vector<float>& data, float lastPoint, float vectorLen)
 {
 	
@@ -236,10 +245,10 @@ mockBlobsOnVector(float fristPointDiam, const vector<float>& data, float lastPoi
  * @param dp data point to extract blobs from
  * @return vector with blobs generated from this data point.
  */
-vector<float4>
-blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn, float3 axesLengths)
+vector<glm::vec4>
+blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn, glm::vec3 axesLengths)
 {
-	vector<float4> ret;
+	vector<glm::vec4> ret;
 	//TODO: Finish
 	return ret;
 }
@@ -269,8 +278,8 @@ void blobber(ostream& os)
 	os << xLen / blocksOnX << " " << yLen / blocksOnY << " " << zLen / blocksOnZ << "\n";
 	os << BLOCK_LOG_SIZE << "\n";
 	
-	float3 startPoint{-xLen / 2.0f, yLen, -zLen / 2.0f};
-	vector<float4> blobs;
+	glm::vec3 startPoint{-xLen / 2.0f, yLen, -zLen / 2.0f};
+	vector<glm::vec4> blobs;
 	
 	for(auto& elem: fractureNet.dataPoints) {
 		DataPoint& dp = elem.second;
