@@ -216,13 +216,22 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 	int nPoints = data.size() + 1;
 	while (pos <= limit) {
 		//Calculate between which two data points will this blob fall
-		int left = static_cast<int>(std::floor(pos / static_cast<float>(nPoints)));
-		int right = static_cast<int>(std::ceil(pos / static_cast<float>(nPoints)));
+		int segmentStartIdx = std::floor(pos / vectorLen * nPoints);
 		
-		if(left == 0) {
-			
+		float discard;
+		float frac = std::modf(pos, &discard);
+		float diam = 0.0f;
+		
+		if(segmentStartIdx == 0) { //pos in first segment
+			diam = glm::mix(firstPointDiam, data[0], frac);
+		} else if(segmentStartIdx == nPoints - 1) { //pos in last segment
+			diam = glm::mix(data[data.size() - 1], nextDpMidDiam, frac);
+		} else {
+			diam = glm::mix(data[segmentStartIdx - 1], data[segmentStartIdx], frac);
 		}
-		//TODO: finish
+		
+		ret.push_back(glm::vec2{pos, diam});
+		pos += diam / 2.0f;
 	}
 	
 	return ret;
