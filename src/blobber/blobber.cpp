@@ -263,10 +263,11 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
  * positive (considered away from the viewer).
  *
  * @param dp data point to extract blobs from
+ * @param fn fracture net map to get neighbouring datapoints (if exist)
  * @return vector with blobs generated from this data point.
  */
 vector<glm::vec4>
-blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn, glm::vec3 axesLengths)
+blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn)
 {
 	vector<glm::vec4> ret;
 	ret.push_back(glm::vec4{0.0f, 0.0f, 0.0f, dp.midDiam});
@@ -337,7 +338,23 @@ void blobber(ostream& os)
 	
 	for(auto& elem: fractureNet.dataPoints) {
 		DataPoint& dp = elem.second;
-		//TODO: Finish
+		glm::vec4 offset {
+			fractureNet.xLen * dp.x - fractureNet.dimensionLength(Dimension::DIM_X) / 2.0f,
+			fractureNet.dimensionLength(Dimension::DIM_Y) - fractureNet.yLen * dp.y,
+			fractureNet.zLen * dp.z - fractureNet.dimensionLength(Dimension::DIM_Y) / 2.0f,
+			0.0f
+		};
+		
+		vector<glm::vec4> dpBlobs = blobsFromDataPoint(dp, fractureNet);
+		for(auto& blob : dpBlobs) {
+			blobs.push_back(blob + offset);
+		}
+		
+	}
+	
+	os << blobs.size() << "\n";
+	for(auto& blob : blobs) {
+		os << blob.x << " "  << blob.y << " " << blob.z  << " " << blob.w << "\n";
 	}
 }
 
