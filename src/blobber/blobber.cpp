@@ -202,6 +202,23 @@ readInput(istream& is)
 	}
 }
 
+/**
+ * @brief extract blobs from 1D diameter vector.
+ *
+ * This function takes vector of diameters along single axis and returns
+ * list of blobs for this axis. Returned blobs are represented by two values
+ * i.e. position on the vector (in meters) and diameter. Positions of returned
+ * blobs are kept in x component and diameters in y component.
+ *
+ * @param firstPointDiam diameter of midpoint of dataPoint
+ * @param data vector with diameter values
+ * @param nextDpMidDiam diameter of midpoint of next DataPoint on this vector.
+ *        if it doesn't exis, pass 0.0f.
+ * @param vectorLen Length of this vector in meters
+ * @return vector of 2D vectors that have position of the blob in x component
+ *         and diameter in y componen. Positions are within (0.0 ... vectorLen)
+ *
+ */
 vector<glm::vec2>
 blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDiam, float vectorLen)
 {
@@ -252,7 +269,41 @@ vector<glm::vec4>
 blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn, glm::vec3 axesLengths)
 {
 	vector<glm::vec4> ret;
-	//TODO: Finish
+	ret.push_back(glm::vec4{0.0f, 0.0f, 0.0f, dp.midDiam});
+	
+	//Adding blobs along X axis
+	float nextXDiam = 0.0f;
+	auto itX = fn.dataPoints.find(make_tuple(dp.x+1, dp.y, dp.z));
+	if(itX != fn.dataPoints.end()) {
+		nextXDiam = itX->second.midDiam;
+	}
+	vector<glm::vec2> xBlobs = blobsOnVector(dp.midDiam, dp.xData, nextXDiam, fn.xLen);
+	for(auto& blob : xBlobs) {
+		ret.push_back(glm::vec4{blob.x, 0.0f, 0.0f, blob.y});
+	}
+	
+	// Adding blobs along Y axis
+	float nextYDiam = 0.0f;
+	auto itY = fn.dataPoints.find(make_tuple(dp.x, dp.y+1, dp.z));
+	if(itY != fn.dataPoints.end()) {
+		nextYDiam = itY->second.midDiam;
+	}
+	vector<glm::vec2> yBlobs = blobsOnVector(dp.midDiam, dp.yData, nextYDiam, fn.yLen);
+	for(auto& blob : yBlobs) {
+		ret.push_back(glm::vec4{0.0f, -1.0f * blob.x, 0.0f, blob.y});
+	}
+	
+	//Adding blobs along Z axis
+	float nextZDiam = 0.0f;
+	auto itZ = fn.dataPoints.find(make_tuple(dp.x, dp.y, dp.z+1));
+	if(itZ != fn.dataPoints.end()) {
+		nextZDiam = itZ->second.midDiam;
+	}
+	vector<glm::vec2> zBlobs = blobsOnVector(dp.midDiam, dp.zData, nextZDiam, fn.zLen);
+	for(auto& blob : zBlobs) {
+		ret.push_back(glm::vec4(0.0f, 0.0f, blob.x, blob.y));
+	}
+	
 	return ret;
 }
 
