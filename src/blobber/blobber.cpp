@@ -157,13 +157,16 @@ readDataPoint(istream& is)
 	
 	float tmp;
 	for(int i=0; i<nX; i++){
-		is >> ret.xData[i];
+		is >> tmp;
+		ret.xData.push_back(tmp);
 	}
 	for(int i=0; i<nY; i++){
-		is >> ret.yData[i];
+		is >> tmp;
+		ret.yData.push_back(tmp);
 	}
 	for(int i=0; i<nZ; i++){
-		is >> ret.zData[i];
+		is >> tmp;
+		ret.zData.push_back(tmp);
 	}
 	return ret;
 }
