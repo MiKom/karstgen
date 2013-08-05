@@ -325,16 +325,18 @@ void blobber(ostream& os)
 {
 	float xBlockLen = fractureNet.dimensionLength(Dimension::DIM_X) / g_blocksOnX;
 	
-	float xLen = fractureNet.dimensionLength(Dimension::DIM_X);
+	//lengths on X and Z are enlarge so blobs on boundaries are wholly within the are
+	//where marching cubes will work
+	float xLen = fractureNet.dimensionLength(Dimension::DIM_X) + 2 * fractureNet.xLen;
 	float yLen = fractureNet.dimensionLength(Dimension::DIM_Y);
-	float zLen = fractureNet.dimensionLength(Dimension::DIM_Z);
+	float zLen = fractureNet.dimensionLength(Dimension::DIM_Z) + 2 * fractureNet.zLen;
 	
 	int blocksOnX = g_blocksOnX;
 	int blocksOnY = static_cast<int>(std::ceil(yLen / xBlockLen));
 	int blocksOnZ = static_cast<int>(std::ceil(zLen / xBlockLen));
 	
 	//print starting point. Bottom of the structure will be on y = 0.0
-	os << xLen / 2.0f << " " << 0.0f << " " << zLen / 2.0f << "\n";
+	os << -xLen / 2.0f << " " << 0.0f << " " << -zLen / 2.0f << "\n";
 	
 	//Print number of blocks on each axis
 	os << blocksOnX << " " << blocksOnY << " " << blocksOnZ << "\n";
