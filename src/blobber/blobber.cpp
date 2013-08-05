@@ -250,8 +250,15 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 			diam = glm::mix(data[segmentStartIdx - 1], data[segmentStartIdx], frac);
 		}
 		
-		ret.push_back(glm::vec2{pos, diam});
-		pos += diam / 2.0f;
+		//If diameter of calculated blob is too small it's not included
+		//Also makes sure, that pos is moved on each step.
+		if(diam > 0.1f) {
+			ret.push_back(glm::vec2{pos, diam});
+			pos += diam / 2.0f;
+		} else {
+			pos += 0.1f;
+		}
+		
 	}
 	
 	return ret;
