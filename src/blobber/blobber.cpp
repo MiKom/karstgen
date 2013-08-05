@@ -231,15 +231,15 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 		return ret;
 	}
 	
-	float pos = firstPointDiam / 2.0;
-	float limit = vectorLen - nextDpMidDiam / 2.0f;
+	float pos = firstPointDiam;
+	float limit = vectorLen - nextDpMidDiam;
 	int nPoints = data.size() + 1;
+	float segmentLen = vectorLen / nPoints;
 	while (pos <= limit) {
 		//Calculate between which two data points will this blob fall
 		int segmentStartIdx = std::floor(pos / vectorLen * nPoints);
 		
-		float discard;
-		float frac = std::modf(pos, &discard);
+		float frac = std::fmod(pos, segmentLen) / segmentLen;
 		float diam = 0.0f;
 		
 		if(segmentStartIdx == 0) { //pos in first segment
@@ -254,7 +254,7 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 		//Also makes sure, that pos is moved on each step.
 		if(diam > 0.1f) {
 			ret.push_back(glm::vec2{pos, diam});
-			pos += diam / 2.0f;
+			pos += diam;
 		} else {
 			pos += 0.1f;
 		}
@@ -314,7 +314,6 @@ blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn)
 	for(auto& blob : zBlobs) {
 		ret.push_back(glm::vec4(0.0f, 0.0f, blob.x, blob.y));
 	}
-	
 	return ret;
 }
 
