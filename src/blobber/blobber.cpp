@@ -254,7 +254,7 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 		//Also makes sure, that pos is moved on each step.
 		if(diam > 0.1f) {
 			ret.push_back(glm::vec2{pos, diam});
-			pos += diam;
+			pos += diam * 1.2;
 		} else {
 			pos += 0.1f;
 		}
