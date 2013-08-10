@@ -322,7 +322,6 @@ blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn)
  */
 void blobber(ostream& os)
 {
-	float xBlockLen = fractureNet.dimensionLength(Dimension::DIM_X) / g_blocksOnX;
 	
 	//lengths on X and Z are enlarge so blobs on boundaries are wholly within the are
 	//where marching cubes will work
@@ -330,18 +329,27 @@ void blobber(ostream& os)
 	float yLen = fractureNet.dimensionLength(Dimension::DIM_Y);
 	float zLen = fractureNet.dimensionLength(Dimension::DIM_Z) + 2 * fractureNet.zLen;
 	
+	//Length of a single block is derieved from length of a block on X dimension.
+	float blockLen = xLen / g_blocksOnX;
+	
+	//On Y and Z dimensions, number of blocks is proportional to number of bloks on X
 	int blocksOnX = g_blocksOnX;
-	int blocksOnY = static_cast<int>(std::ceil(yLen / xBlockLen));
-	int blocksOnZ = static_cast<int>(std::ceil(zLen / xBlockLen));
+	int blocksOnY = static_cast<int>(std::ceil(yLen / blockLen));
+	int blocksOnZ = static_cast<int>(std::ceil(zLen / blockLen));
+	
+	//Real size of the realm on which Marching cubes will work.
+	float xMcLen = blocksOnX * blockLen;
+	float yMcLen = blocksOnY * blockLen;
+	float zMcLen = blocksOnZ * blockLen;
 	
 	//print starting point. Bottom of the structure will be on y = 0.0
-	os << -xLen / 2.0f << " " << 0.0f << " " << -zLen / 2.0f << "\n";
+	os << -xMcLen / 2.0f << " " << 0.0f << " " << -zMcLen / 2.0f << "\n";
 	
 	//Print number of blocks on each axis
 	os << blocksOnX << " " << blocksOnY << " " << blocksOnZ << "\n";
 	
 	//Print size of block on each axis
-	os << xLen / blocksOnX << " " << yLen / blocksOnY << " " << zLen / blocksOnZ << "\n";
+	os << blockLen << " " << blockLen << " " << blockLen << "\n";
 	os << BLOCK_LOG_SIZE << "\n";
 	
 	glm::vec3 startPoint{-xLen / 2.0f, yLen, -zLen / 2.0f};
