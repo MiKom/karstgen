@@ -99,6 +99,8 @@ using namespace std;
 
 //Constant parameters
 static const int BLOCK_LOG_SIZE = 5;
+static const float BLOB_SPACING_COEFF = 1.2f;
+static const float FILLER_BLOB_DIAM_COEFF = 1.8f;
 
 //Variables for parameters
 static string outputFile = "-";
@@ -231,8 +233,8 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 		return ret;
 	}
 	
-	float pos = firstPointDiam;
-	float limit = vectorLen - nextDpMidDiam;
+	float pos = firstPointDiam * BLOB_SPACING_COEFF;
+	float limit = vectorLen - (nextDpMidDiam / 2.0);
 	int nPoints = data.size() + 1;
 	float segmentLen = vectorLen / nPoints;
 	while (pos <= limit) {
@@ -249,16 +251,27 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 		} else {
 			diam = glm::mix(data[segmentStartIdx - 1], data[segmentStartIdx], frac);
 		}
-		
-		//If diameter of calculated blob is too small it's not included
-		//Also makes sure, that pos is moved on each step.
+
+		//If diameter of calculated blob is too small, makes sure, that
+		//pos is moved by some moderate value on each step.
 		if(diam > 0.1f) {
 			ret.push_back(glm::vec2{pos, diam});
-			pos += diam * 1.2;
+			
+			//If this is the last blob to be added on this vector,
+			//check if space to the next blob is filled well.
+			//If not, place another blob that will hopefully fill it
+			if(pos + diam * BLOB_SPACING_COEFF > limit) {
+				if(pos + diam / 2.0 < limit) {
+					float fillerDiam = FILLER_BLOB_DIAM_COEFF * (limit - (pos + diam / 2.0f));
+					float fillerPos = pos+diam/2.0f + fillerDiam / 2.0f;
+					ret.push_back(glm::vec2{fillerPos, fillerDiam / 2.0f});
+					break;
+				}
+			}
+			pos += diam * BLOB_SPACING_COEFF;
 		} else {
 			pos += 0.1f;
 		}
-		
 	}
 	
 	return ret;
@@ -281,7 +294,6 @@ blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn)
 {
 	vector<glm::vec4> ret;
 	ret.push_back(glm::vec4{0.0f, 0.0f, 0.0f, dp.midDiam});
-	
 	//Adding blobs along X axis
 	float nextXDiam = 0.0f;
 	auto itX = fn.dataPoints.find(make_tuple(dp.x+1, dp.y, dp.z));
