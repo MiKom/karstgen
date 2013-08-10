@@ -106,6 +106,8 @@ static const float FILLER_BLOB_DIAM_COEFF = 1.8f;
 static string outputFile = "-";
 static string inputFile = "-";
 static int randomSeed = 1;
+static unsigned int posDeviationPercent = 0;
+static unsigned int sizeDeviationPercent = 0;
 
 /**
  * \brief How many blocks for Marching cubes are there gonna be on X axis
@@ -130,7 +132,19 @@ void parse_options(int argc, char** argv)
 	                ("blocksOnX,b", po::value<int>(&g_blocksOnX)->default_value(10),
 	                 "How many blocks for marching cubes algorithm will be "
 	                 "present along X axis. Number on other axes will be "
-	                 "proportional.");
+	                 "proportional.")
+	                ("positionDeviationPeorcent,p", po::value<unsigned int>(&posDeviationPercent)->default_value(0),
+	                 "Maximum percentage of blobs size that the blob's poition may "
+	                 "be randomly deviated on each axis. E.g. blob with 1.0m "
+	                 "diameter and this value set to 10 may be deviated 10cm on"
+	                 "each axis. Deviation has uniform distribution within its bounds.")
+	                ("sizeDeviationPercent,s", po::value<unsigned int>(&sizeDeviationPercent)->default_value(0),
+	                 "Maximum percentage of original blob size that the blob's diameter "
+	                 "may be randomly deviated. E.g. blob with 1.0m diameter and this "
+	                 "value set to 10 may end up with size between 0.9m and 1.1m. "
+	                 "Deviation has uniform distribution within its bounds.")
+	                ("seed", po::value<int>(&randomSeed)->default_value(1),
+	                 "Random seed used for deviating sizes and positions of blobs");
 	
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -334,6 +348,14 @@ blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn)
  */
 void blobber(ostream& os)
 {
+	//Initialize RNG engine
+	std::minstd_rand rng(randomSeed);
+	
+	float posRandCoeff = static_cast<float>(std::min((uint) 100, posDeviationPercent)) / 100.0f;
+	std::uniform_real_distribution<float> posDis(-posRandCoeff, posRandCoeff);
+	
+	float sizeRandCoeff = static_cast<float>(std::min((uint) 100, sizeDeviationPercent)) / 100.0f;
+	std::uniform_real_distribution<float> sizeDis(-sizeRandCoeff, sizeRandCoeff);
 	
 	//lengths on X and Z are enlarge so blobs on boundaries are wholly within the are
 	//where marching cubes will work
@@ -385,7 +407,10 @@ void blobber(ostream& os)
 	
 	os << blobs.size() << "\n";
 	for(auto& blob : blobs) {
-		os << blob.x << " "  << blob.y << " " << blob.z  << " " << blob.w << "\n";
+		os << blob.x + posDis(rng) * blob.w << " "
+		   << blob.y + posDis(rng) * blob.w << " "
+		   << blob.z + posDis(rng) * blob.w << " "
+		   << blob.w + sizeDis(rng) * blob.w << "\n";
 	}
 }
 
