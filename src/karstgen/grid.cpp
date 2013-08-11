@@ -87,7 +87,7 @@ Grid::clear(float val)
 		std::fill_n(mValues, getFlatDataSize(mGridDim), val);
 	} else {
 		unsigned int i = 0;
-		mMemSetKernel.setArg(i++, 0.0f);
+		mMemSetKernel.setArg(i++, val);
 		mMemSetKernel.setArg(i++, mValuesBuffer);
 		
 		run1DKernelSingleQueue(
