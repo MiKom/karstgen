@@ -227,8 +227,10 @@ int main(int argc, char** argv)
 						voxelSize,
 						blockStart,
 						ctx.getClContext(),
-						ctx.getQueues()[0]
+						ctx.getQueues()[0],
+						ctx.getMemsetKernel()
 					};
+					grid.clear();
 					ctx.getBlobProgram()->runBlob(blobs.get(), nBlobs, grid);
 					MarchingCubes* mc = ctx.getMcProgram();
 					meshes.push_back(mc->compute(grid, 1.0f));

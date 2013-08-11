@@ -1,5 +1,6 @@
 #include "config.h"
 #include "grid.h"
+#include "util.h"
 
 /**
   \param context OpenCL context within which this grid will operate
@@ -12,13 +13,15 @@ Grid::Grid(
 	float3 voxelSize,
 	float3 startPos,
 	cl::Context& context,
-	cl::CommandQueue& cq
+	cl::CommandQueue& cq,
+	cl::Kernel& memSetKernel
 ) : 
 	mGridDim{gridDim},
 	mVoxelSize{voxelSize},
 	mStartPos{startPos},
 	mContext{context},
 	mCommandQueue{cq},
+	mMemSetKernel{memSetKernel},
 	mStorage{Storage::HOST},
 	mValues{new float4[getFlatDataSize(gridDim)]}
 { }
@@ -69,5 +72,28 @@ Grid::copyToHost()
 	} else {
 		//Data already on host
 		return;
+	}
+}
+
+/**
+ * @brief clear grid data to specified value
+ *
+ * @param val value to which all data in grid will be set
+ */
+void
+Grid::clear(float val)
+{
+	if(mStorage == Storage::HOST) {
+		std::fill_n(mValues, getFlatDataSize(mGridDim), val);
+	} else {
+		unsigned int i = 0;
+		mMemSetKernel.setArg(i++, 0.0f);
+		mMemSetKernel.setArg(i++, mValuesBuffer);
+		
+		run1DKernelSingleQueue(
+			mMemSetKernel,
+			mCommandQueue,
+			getFlatDataSize(mGridDim)
+		);
 	}
 }

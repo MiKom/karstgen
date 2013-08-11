@@ -23,7 +23,8 @@ int main()
 			float3(15.0f/64.0f, 15.0f / 64.0f, 15.0f / 64.0f),
 			float3(-2.5f, -2.5f, -2.5f),
 			ctx.getClContext(),
-			ctx.getQueues()[0]
+			ctx.getQueues()[0],
+			ctx.getMemsetKernel()
 		);
 		
 		float3 blobs[] = { {0.0f, 0.0f, 0.0f, 1.94f}, {0.0f, 0.5f, 2.0f, 2.0f} };

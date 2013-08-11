@@ -28,7 +28,7 @@ TEST_F(ClassifyTest, FlatSurfaceTest)
 	float3 startPos{0.0f};
 	
 	cl::CommandQueue queue = ctx->getQueues()[0];
-	Grid grid{gridDim, voxelSize, startPos, ctx->getClContext(), queue};
+	Grid grid{gridDim, voxelSize, startPos, ctx->getClContext(), queue, ctx->getMemsetKernel()};
 	
 	float4 *values = grid.getValues();
 

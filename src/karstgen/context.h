@@ -40,6 +40,9 @@ public:
 	
 	Scan*
 	getScanProgram() { return m_scanProgram; }
+	
+	cl::Kernel&
+	getMemsetKernel() { return m_memSetKernel; }
 
 };
 
