@@ -2,6 +2,10 @@
 #include "grid.h"
 
 /**
+  \param gridDim dimension of grid, i.e. number of voxels in each dimension
+  \param voxelSize size of singe voxel
+  \param startPos starting position of the grid. Start position is place in
+    smallest x, y and z position
   \param context OpenCL context within which this grid will operate
   \param cq OpenCL command queue (in the same context as context
   parameter) that will be used to move data back and forth between the
