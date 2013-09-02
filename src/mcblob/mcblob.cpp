@@ -75,7 +75,7 @@ void parse_options(int argc, char** argv)
 	  "  Fourth line should contain one integer n where which is log2 of size "
 	  "(in voxels) of each axis of each block. For example, if you want each "
 	  "block to be 256x256x256, n should be 8\n"
-	  "  Fifth line should be a single integer denoting number of blob"
+	  "  Fifth line should be a single integer denoting number of blob "
 	  "descriptions that will follow. Each blob description is located on "
 	  "separate line. Single blob data consists of four float values, its "
 	  "location as x,y,z coordinates and diameter.\n\n"
