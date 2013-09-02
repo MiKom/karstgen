@@ -28,6 +28,7 @@ public:
 protected:
 	cl::Context mContext;
 	cl::CommandQueue mCommandQueue;
+	cl::Kernel mMemSetKernel;
 	float4 *mValues;
 	cl::Buffer mValuesBuffer;
 	uint3 mGridDim; /**< Size of the grid, i.e. how many small voxels are
@@ -47,7 +48,8 @@ public:
 		float3 voxelSize,
 		float3 startPos,
 		cl::Context& context,
-		cl::CommandQueue& cq
+		cl::CommandQueue& cq,
+		cl::Kernel& memSetKernel
 	);
 	//Make grid noncopyable
 	Grid(const Grid& other) = delete;
@@ -60,6 +62,8 @@ public:
 	void setStartPos(const float3& pos) { mStartPos = pos; }
 	float4* getValues() const { return mValues; }
 	cl::Buffer getValuesBuffer() const { return mValuesBuffer; }
+	
+	void clear(float val=0.0f);
 	
 	/**
 	  \brief Get current storage place.

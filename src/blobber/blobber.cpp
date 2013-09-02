@@ -99,11 +99,15 @@ using namespace std;
 
 //Constant parameters
 static const int BLOCK_LOG_SIZE = 5;
+static const float BLOB_SPACING_COEFF = 1.2f;
+static const float FILLER_BLOB_DIAM_COEFF = 1.8f;
 
 //Variables for parameters
 static string outputFile = "-";
 static string inputFile = "-";
 static int randomSeed = 1;
+static unsigned int posDeviationPercent = 0;
+static unsigned int sizeDeviationPercent = 0;
 
 /**
  * \brief How many blocks for Marching cubes are there gonna be on X axis
@@ -128,7 +132,19 @@ void parse_options(int argc, char** argv)
 	                ("blocksOnX,b", po::value<int>(&g_blocksOnX)->default_value(10),
 	                 "How many blocks for marching cubes algorithm will be "
 	                 "present along X axis. Number on other axes will be "
-	                 "proportional.");
+	                 "proportional.")
+	                ("positionDeviationPeorcent,p", po::value<unsigned int>(&posDeviationPercent)->default_value(0),
+	                 "Maximum percentage of blobs size that the blob's poition may "
+	                 "be randomly deviated on each axis. E.g. blob with 1.0m "
+	                 "diameter and this value set to 10 may be deviated 10cm on"
+	                 "each axis. Deviation has uniform distribution within its bounds.")
+	                ("sizeDeviationPercent,s", po::value<unsigned int>(&sizeDeviationPercent)->default_value(0),
+	                 "Maximum percentage of original blob size that the blob's diameter "
+	                 "may be randomly deviated. E.g. blob with 1.0m diameter and this "
+	                 "value set to 10 may end up with size between 0.9m and 1.1m. "
+	                 "Deviation has uniform distribution within its bounds.")
+	                ("seed", po::value<int>(&randomSeed)->default_value(1),
+	                 "Random seed used for deviating sizes and positions of blobs");
 	
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -231,8 +247,8 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 		return ret;
 	}
 	
-	float pos = firstPointDiam;
-	float limit = vectorLen - nextDpMidDiam;
+	float pos = firstPointDiam * BLOB_SPACING_COEFF;
+	float limit = vectorLen - (nextDpMidDiam / 2.0);
 	int nPoints = data.size() + 1;
 	float segmentLen = vectorLen / nPoints;
 	while (pos <= limit) {
@@ -249,16 +265,27 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 		} else {
 			diam = glm::mix(data[segmentStartIdx - 1], data[segmentStartIdx], frac);
 		}
-		
-		//If diameter of calculated blob is too small it's not included
-		//Also makes sure, that pos is moved on each step.
+
+		//If diameter of calculated blob is too small, makes sure, that
+		//pos is moved by some moderate value on each step.
 		if(diam > 0.1f) {
 			ret.push_back(glm::vec2{pos, diam});
-			pos += diam * 1.2;
+			
+			//If this is the last blob to be added on this vector,
+			//check if space to the next blob is filled well.
+			//If not, place another blob that will hopefully fill it
+			if(pos + diam * BLOB_SPACING_COEFF > limit) {
+				if(pos + diam / 2.0 < limit) {
+					float fillerDiam = FILLER_BLOB_DIAM_COEFF * (limit - (pos + diam / 2.0f));
+					float fillerPos = pos+diam/2.0f + fillerDiam / 2.0f;
+					ret.push_back(glm::vec2{fillerPos, fillerDiam / 2.0f});
+					break;
+				}
+			}
+			pos += diam * BLOB_SPACING_COEFF;
 		} else {
 			pos += 0.1f;
 		}
-		
 	}
 	
 	return ret;
@@ -281,7 +308,6 @@ blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn)
 {
 	vector<glm::vec4> ret;
 	ret.push_back(glm::vec4{0.0f, 0.0f, 0.0f, dp.midDiam});
-	
 	//Adding blobs along X axis
 	float nextXDiam = 0.0f;
 	auto itX = fn.dataPoints.find(make_tuple(dp.x+1, dp.y, dp.z));
@@ -322,7 +348,14 @@ blobsFromDataPoint(const DataPoint& dp, const FractureNet& fn)
  */
 void blobber(ostream& os)
 {
-	float xBlockLen = fractureNet.dimensionLength(Dimension::DIM_X) / g_blocksOnX;
+	//Initialize RNG engine
+	std::minstd_rand rng(randomSeed);
+	
+	float posRandCoeff = static_cast<float>(std::min((uint) 100, posDeviationPercent)) / 100.0f;
+	std::uniform_real_distribution<float> posDis(-posRandCoeff, posRandCoeff);
+	
+	float sizeRandCoeff = static_cast<float>(std::min((uint) 100, sizeDeviationPercent)) / 100.0f;
+	std::uniform_real_distribution<float> sizeDis(-sizeRandCoeff, sizeRandCoeff);
 	
 	//lengths on X and Z are enlarge so blobs on boundaries are wholly within the are
 	//where marching cubes will work
@@ -330,18 +363,27 @@ void blobber(ostream& os)
 	float yLen = fractureNet.dimensionLength(Dimension::DIM_Y);
 	float zLen = fractureNet.dimensionLength(Dimension::DIM_Z) + 2 * fractureNet.zLen;
 	
+	//Length of a single block is derieved from length of a block on X dimension.
+	float blockLen = xLen / g_blocksOnX;
+	
+	//On Y and Z dimensions, number of blocks is proportional to number of bloks on X
 	int blocksOnX = g_blocksOnX;
-	int blocksOnY = static_cast<int>(std::ceil(yLen / xBlockLen));
-	int blocksOnZ = static_cast<int>(std::ceil(zLen / xBlockLen));
+	int blocksOnY = static_cast<int>(std::ceil(yLen / blockLen));
+	int blocksOnZ = static_cast<int>(std::ceil(zLen / blockLen));
+	
+	//Real size of the realm on which Marching cubes will work.
+	float xMcLen = blocksOnX * blockLen;
+	float yMcLen = blocksOnY * blockLen;
+	float zMcLen = blocksOnZ * blockLen;
 	
 	//print starting point. Bottom of the structure will be on y = 0.0
-	os << -xLen / 2.0f << " " << 0.0f << " " << -zLen / 2.0f << "\n";
+	os << -xMcLen / 2.0f << " " << 0.0f << " " << -zMcLen / 2.0f << "\n";
 	
 	//Print number of blocks on each axis
 	os << blocksOnX << " " << blocksOnY << " " << blocksOnZ << "\n";
 	
 	//Print size of block on each axis
-	os << xLen / blocksOnX << " " << yLen / blocksOnY << " " << zLen / blocksOnZ << "\n";
+	os << blockLen << " " << blockLen << " " << blockLen << "\n";
 	os << BLOCK_LOG_SIZE << "\n";
 	
 	glm::vec3 startPoint{-xLen / 2.0f, yLen, -zLen / 2.0f};
@@ -365,7 +407,10 @@ void blobber(ostream& os)
 	
 	os << blobs.size() << "\n";
 	for(auto& blob : blobs) {
-		os << blob.x << " "  << blob.y << " " << blob.z  << " " << blob.w << "\n";
+		os << blob.x + posDis(rng) * blob.w << " "
+		   << blob.y + posDis(rng) * blob.w << " "
+		   << blob.z + posDis(rng) * blob.w << " "
+		   << blob.w + sizeDis(rng) * blob.w << "\n";
 	}
 }
 

@@ -12,6 +12,18 @@ uint4 calcGridPos(uint i, uint4 gridSize)
 	return (uint4) (x, y, z, 0);
 }
 
+float
+singleBlobVal(float4 blob, float4 pos)
+{
+	return blob.w / 
+		max(
+		     DIV_EPSILON,
+		     (pos.x - blob.x) * (pos.x - blob.x) +
+		     (pos.y - blob.y) * (pos.y - blob.y) +
+		     (pos.z - blob.z) * (pos.z - blob.z)
+		);
+}
+
 /**
   This kernel adds a set of blobs to the grid.
   Output parameter is values, density function values
@@ -46,13 +58,14 @@ blobValue(
 		blob = blobs[i];
 		blob.w /= 2.0f; //HACK: we have diameter in parameter, but equations in form below treat .w as radius
 		blob.w *= blob.w; //WARNING: hack to make blobs roughly the same diameter as w parameter
-		tmpVal = blob.w / max((pown(pos.x - blob.x, 2) + pown(pos.y - blob.y, 2) + pown(pos.z - blob.z, 2)), DIV_EPSILON);
+		
+		tmpVal = singleBlobVal(blob, pos);
 		val += tmpVal;
 		
 		//Calculate gradient
-		tmpNorm.x = blob.w / max((pown((pos.x + EPSILON) - blob.x, 2) + pown(pos.y - blob.y, 2) + pown(pos.z - blob.z, 2)), DIV_EPSILON);
-		tmpNorm.y = blob.w / max((pown(pos.x - blob.x, 2) + pown((pos.y + EPSILON) - blob.y, 2) + pown(pos.z - blob.z, 2)), DIV_EPSILON);
-		tmpNorm.z = blob.w / max((pown(pos.x - blob.x, 2) + pown(pos.y - blob.y, 2) + pown((pos.z + EPSILON) - blob.z, 2)), DIV_EPSILON);
+		tmpNorm.x = singleBlobVal(blob, pos + (float4)(EPSILON, 0.0f, 0.0f, 0.0f));
+		tmpNorm.y = singleBlobVal(blob, pos + (float4)(0.0f, EPSILON, 0.0f, 0.0f));
+		tmpNorm.z = singleBlobVal(blob, pos + (float4)(0.0f, 0.0f, EPSILON, 0.0f));
 		
 		norm += tmpNorm;
 	}
