@@ -1,5 +1,5 @@
-#ifndef __KARSTGEN_CONTEXT_H
-#define __KARSTGEN_CONTEXT_H
+#ifndef __MCBLOB_CONTEXT_H
+#define __MCBLOB_CONTEXT_H
 
 #include <CL/cl.hpp>
 #include <vector>

@@ -1,5 +1,5 @@
-#ifndef __KARSTGEN_MARCHINGCUBES_H__
-#define __KARSTGEN_MARCHINGCUBES_H__
+#ifndef __MCBLOB_MARCHINGCUBES_H__
+#define __MCBLOB_MARCHINGCUBES_H__
 
 #include "abstractprogram.h"
 #include "common/mathtypes.h"

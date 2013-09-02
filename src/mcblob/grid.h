@@ -1,5 +1,5 @@
-#ifndef __KARSTGEN_GRID_H__
-#define __KARSTGEN_GRID_H__
+#ifndef __MCBLOB_GRID_H__
+#define __MCBLOB_GRID_H__
 
 #include "common/mathtypes.h"
 

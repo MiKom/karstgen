@@ -1,5 +1,5 @@
-#ifndef __KARSTGEN_SCAN_H__
-#define __KARSTGEN_SCAN_H__
+#ifndef __MCBLOB_SCAN_H__
+#define __MCBLOB_SCAN_H__
 
 #include "abstractprogram.h"
 
@@ -65,4 +65,4 @@ public:
 	void compute(cl::Buffer src, cl::Buffer dst, int size);
 };
 
-#endif // __KARSTGEN_SCAN_H__
+#endif // __MCBLOB_SCAN_H__

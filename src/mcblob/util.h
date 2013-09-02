@@ -1,5 +1,5 @@
-#ifndef __KARSTGEN_UTIL_H__
-#define __KARSTGEN_UTIL_H__
+#ifndef __MCBLOB_UTIL_H__
+#define __MCBLOB_UTIL_H__
 
 #include "common/mathtypes.h"
 

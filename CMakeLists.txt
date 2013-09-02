@@ -15,7 +15,7 @@ IF(${CMAKE_COMPILER_IS_GNUCXX})
 	ENDIF(${CMAKE_COMPILER_IS_GNUCXX})
 
 
-FILE(COPY src/karstgen/kernels DESTINATION ${PROJECT_BINARY_DIR})
+FILE(COPY src/mcblob/kernels DESTINATION ${PROJECT_BINARY_DIR})
 
 OPTION(BUILD_DOCUMENTATION "Use Doxygen to create HTML API documentation" ON)
 IF(BUILD_DOCUMENTATION)
@@ -28,14 +28,14 @@ IF(BUILD_DOCUMENTATION)
 	#divided into modules or abstract cmake targets and make doc for each
 	#executable
 	
-	CONFIGURE_FILE(src/karstgen/Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile_karstgen @ONLY IMMEDIATE)
+	CONFIGURE_FILE(src/mcblob/Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile_mcblob @ONLY IMMEDIATE)
 	CONFIGURE_FILE(src/blobber/Doxyfile.in ${PROJECT_BINARY_DIR}/Doxyfile_blobber @ONLY IMMEDIATE)
 	ADD_CUSTOM_TARGET(doc
-		COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile_karstgen
-		SOURCES src/karstgen/Doxyfile.in
+		COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile_mcblob
+		SOURCES src/mcblob/Doxyfile.in
 
 		COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile_blobber
-		SOURCES src/blobber/Doxyfile.in
+		SOURCES src/mcblob/Doxyfile.in
 	)
 ENDIF()
 
@@ -55,51 +55,51 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 INCLUDE_DIRECTORIES( "include/" )
 INCLUDE_DIRECTORIES( "src/" )
 
-SET(KARSTGEN_SOURCES
-	src/karstgen/config.h
+SET(MCBLOB_SOURCES
+	src/mcblob/config.h
 	
-	src/karstgen/abstractprogram.h
-	src/karstgen/abstractprogram.cpp
+	src/mcblob/abstractprogram.h
+	src/mcblob/abstractprogram.cpp
 	
-	src/karstgen/grid.h
-	src/karstgen/grid.cpp
+	src/mcblob/grid.h
+	src/mcblob/grid.cpp
 
-	src/karstgen/marchingcubes.h
-	src/karstgen/marchingcubes.cpp
-	src/karstgen/kernels/marchingcubes.cl
+	src/mcblob/marchingcubes.h
+	src/mcblob/marchingcubes.cpp
+	src/mcblob/kernels/marchingcubes.cl
 
-	src/karstgen/scan.h
-	src/karstgen/scan.cpp
-	src/karstgen/kernels/scan.cl
+	src/mcblob/scan.h
+	src/mcblob/scan.cpp
+	src/mcblob/kernels/scan.cl
 
-	src/karstgen/kernels/util.cl
+	src/mcblob/kernels/util.cl
 
-	src/karstgen/blob.h
-	src/karstgen/blob.cpp
-	src/karstgen/kernels/blob.cl
+	src/mcblob/blob.h
+	src/mcblob/blob.cpp
+	src/mcblob/kernels/blob.cl
 
-	src/karstgen/util.h
-	src/karstgen/util.cpp
-	src/karstgen/context.h
-	src/karstgen/context.cpp
+	src/mcblob/util.h
+	src/mcblob/util.cpp
+	src/mcblob/context.h
+	src/mcblob/context.cpp
 
-	src/karstgen/exporters.h
-	src/karstgen/exporters.cpp
+	src/mcblob/exporters.h
+	src/mcblob/exporters.cpp
 
-	src/karstgen/tables.h
+	src/mcblob/tables.h
 )
 
-ADD_EXECUTABLE(karstgen ${KARSTGEN_SOURCES} src/karstgen/karstgen.cpp )
-TARGET_LINK_LIBRARIES( karstgen ${OPENCL_LIBRARIES} )
-TARGET_LINK_LIBRARIES( karstgen ${Boost_LIBRARIES} )
+ADD_EXECUTABLE(mcblob ${MCBLOB_SOURCES} src/mcblob/mcblob.cpp )
+TARGET_LINK_LIBRARIES( mcblob ${OPENCL_LIBRARIES} )
+TARGET_LINK_LIBRARIES( mcblob ${Boost_LIBRARIES} )
 
 #TODO: Temporary hack until CMake module for AVR is written
-TARGET_LINK_LIBRARIES( karstgen /usr/local/lib/libavr.so )
+TARGET_LINK_LIBRARIES( mcblob /usr/local/lib/libavr.so )
 
 ENABLE_TESTING()
 
-INCLUDE_DIRECTORIES("src/karstgen/")
-ADD_EXECUTABLE(01_simpleBlob ${KARSTGEN_SOURCES} tests/01_simpleBlob.cpp)
+INCLUDE_DIRECTORIES("src/mcblob/")
+ADD_EXECUTABLE(01_simpleBlob ${MCBLOB_SOURCES} tests/01_simpleBlob.cpp)
 TARGET_LINK_LIBRARIES( 01_simpleBlob ${OPENCL_LIBRARIES} )
 
 #TODO: Temporary hack until CMake module for AVR is written
@@ -119,7 +119,7 @@ IF(${GTEST_FOUND})
 
 	MACRO(REGISTER_TEST executableName testFiles testName)
 		ADD_EXECUTABLE(${executableName}
-			${KARSTGEN_SOURCES}
+			${MCBLOB_SOURCES}
 			${testFiles}
 			${TEST_COMMON_SOURCES}
 		)

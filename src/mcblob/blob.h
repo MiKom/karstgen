@@ -1,5 +1,5 @@
-#ifndef __KARSTGEN_BLOB_H
-#define __KARSTGEN_BLOB_H
+#ifndef __MCBLOB_BLOB_H
+#define __MCBLOB_BLOB_H
 
 #include <vector>
 
@@ -28,4 +28,4 @@ public:
 
 };
 
-#endif //__KARSTGEN_BLOB_H
+#endif //__MCBLOB_BLOB_H

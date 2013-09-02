@@ -1,5 +1,5 @@
-#ifndef __KARSTGEN__ABSTRACTPROGRAM_H__
-#define __KARSTGEN__ABSTRACTPROGRAM_H__
+#ifndef __MCBLOB__ABSTRACTPROGRAM_H__
+#define __MCBLOB__ABSTRACTPROGRAM_H__
 
 #include <vector>
 
