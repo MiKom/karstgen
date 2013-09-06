@@ -1,5 +1,5 @@
 /**
-  \file 
+  \mainpage
   Blobber is a program that can take description of fracture net and produce
   set of blobs in form of input for karstgen program.
   
@@ -37,7 +37,7 @@
   If set size for given direction is 0, than there is no fracture in this direction
   
   
-  General output structure:
+  General input structure:
   \verbatim
   x_size y_size z_size
   x_lenght y_length z_length
@@ -134,9 +134,9 @@ void parse_options(int argc, char** argv)
 	                 "present along X axis. Number on other axes will be "
 	                 "proportional.")
 	                ("positionDeviationPeorcent,p", po::value<unsigned int>(&posDeviationPercent)->default_value(0),
-	                 "Maximum percentage of blobs size that the blob's poition may "
+	                 "Maximum percentage of blobs size that the blob's position may "
 	                 "be randomly deviated on each axis. E.g. blob with 1.0m "
-	                 "diameter and this value set to 10 may be deviated 10cm on"
+	                 "diameter and this value set to 10 may be deviated 10cm on "
 	                 "each axis. Deviation has uniform distribution within its bounds.")
 	                ("sizeDeviationPercent,s", po::value<unsigned int>(&sizeDeviationPercent)->default_value(0),
 	                 "Maximum percentage of original blob size that the blob's diameter "
