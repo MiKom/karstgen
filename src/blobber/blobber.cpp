@@ -207,6 +207,21 @@ readInput(istream& is)
 	
 	for(int i=0; i<nDataPoints; i++){
 		DataPoint&& dp = readDataPoint(is);
+		auto dpPos = make_tuple(dp.x, dp.y, dp.z);
+		if(fractureNet.dataPoints.find(dpPos) != fractureNet.dataPoints.end()) {
+			ostringstream ss;
+			ss << "Malformed inptut, more than one datapoint in position ("
+			   << dp.x <<", " << dp.y << ", " << dp.z <<").";
+			throw runtime_error(ss.str());
+		}
+		
+		if(dp.x > fractureNet.x || dp.y > fractureNet.y || dp.z > fractureNet.z ) {
+			ostringstream ss;
+			ss << "Malformed inptut, data point at ("
+			   << dp.x <<", " << dp.y << ", " << dp.z <<") beyond fracture "
+			      "net domain";
+			throw runtime_error(ss.str());
+		}
 		fractureNet.dataPoints[make_tuple(dp.x, dp.y, dp.z)] = dp;
 	}
 	
