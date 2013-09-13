@@ -5,6 +5,7 @@
 #include <tuple>
 #include <avr/avr++.h>
 #include <boost/program_options.hpp>
+#include <signal.h>
 
 #include "util.h"
 #include "grid.h"
@@ -26,6 +27,12 @@ enum class OutputFormat {
 string outputFormatString;
 string outputFile;
 string inputFile;
+bool debug = false;
+
+/**
+ * @brief if true, stop calculations and dump results so far
+ */
+bool bailout = false;
 
 //Input data
 static float3 startPoint{0.0f, 0.0f, 0.0f};
@@ -182,7 +189,14 @@ read_input(istream& is)
 //	}
 //}
 
+void usr1_handler(int signal)
+{
+	bailout = true;
+}
 
+struct sigaction usr1_action = {
+	usr1_handler, 0, 0, 0, 0
+};
 
 int main(int argc, char** argv)
 {
@@ -201,6 +215,8 @@ int main(int argc, char** argv)
 		//find_boundaries_and_smallest_blob(blobs.get(), nBlobs);
 		
 		Context ctx;
+		
+		sigaction(SIGUSR1, &usr1_action, NULL);
 		
 		//Main algorithm
 		
@@ -234,9 +250,11 @@ int main(int argc, char** argv)
 					ctx.getBlobProgram()->runBlob(blobs.get(), nBlobs, grid);
 					MarchingCubes* mc = ctx.getMcProgram();
 					meshes.push_back(mc->compute(grid, 1.0f));
+					if(bailout) goto after_computation;
 				}
 			}
 		}
+after_computation:
 		
 		switch(outputFormat) {
 		case OutputFormat::OUTPUT_FORMAT_AVR:
