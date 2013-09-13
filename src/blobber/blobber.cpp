@@ -409,7 +409,7 @@ void blobber(ostream& os)
 		glm::vec4 offset {
 			fractureNet.xLen * dp.x - fractureNet.dimensionLength(Dimension::DIM_X) / 2.0f,
 			fractureNet.dimensionLength(Dimension::DIM_Y) - fractureNet.yLen * dp.y,
-			fractureNet.zLen * dp.z - fractureNet.dimensionLength(Dimension::DIM_Y) / 2.0f,
+			fractureNet.zLen * dp.z - fractureNet.dimensionLength(Dimension::DIM_Z) / 2.0f,
 			0.0f
 		};
 		
