@@ -37,21 +37,23 @@ void Blob::runBlob(const float4 *const blobs, int nBlobs, Grid &grid)
 {
 	cl_int blobsPerRun = mConstantBufferSize / sizeof(blobs[0]);
 	grid.copyToDevice();
+
+	cl::Buffer blobBuffer = cl::Buffer(
+		mContext,
+		CL_MEM_READ_ONLY,
+		mConstantBufferSize
+	);
+	
 	for(int i=0; i<nBlobs; i+= blobsPerRun) {
 		size_t partStart = i;
 		size_t partSize = std::min(nBlobs - i, blobsPerRun);
 		
-		cl::Buffer blobBuffer = cl::Buffer(
-			mContext,
-			CL_MEM_READ_ONLY,
-			partSize * sizeof(cl_float3)
-		);
 		mFirstQueue.enqueueWriteBuffer(
 			blobBuffer,
 			CL_TRUE,
-			partStart * sizeof(float4),
+			0,
 			partSize * sizeof(float4),
-			blobs
+			blobs + partStart
 		);
 		
 		cl_int nPoints = (grid.getGridSize().x + 1) *
@@ -63,7 +65,7 @@ void Blob::runBlob(const float4 *const blobs, int nBlobs, Grid &grid)
 		mBlobValKernel.setArg(arg++, grid.getGridSize());
 		mBlobValKernel.setArg(arg++, grid.getVoxelSize());
 		mBlobValKernel.setArg(arg++, blobBuffer);
-		mBlobValKernel.setArg(arg++, nBlobs);
+		mBlobValKernel.setArg(arg++, (int) partSize);
 		mBlobValKernel.setArg(arg++, grid.getValuesBuffer());
 		mBlobValKernel.setArg(arg++, nPoints);
 		
