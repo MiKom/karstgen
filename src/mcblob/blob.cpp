@@ -11,7 +11,7 @@ using namespace std;
 static const std::string sPath = "kernels/blob.cl";
 
 static const int BLOB_THREADS_PER_WG = 0;
-static const bool BLOB_USE_ALL_CARDS = true;
+static const bool BLOB_USE_ALL_CARDS = false;
 
 Blob::Blob(
 	const cl::Context &context,
