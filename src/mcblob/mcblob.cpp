@@ -54,6 +54,8 @@ void parse_options(int argc, char** argv)
 	po::options_description desc("Available options");
 	desc.add_options()
 	    ("help,h", "Print this message")
+	    ("debug,d", po::value(&debug)->zero_tokens(),
+	  "Print debug messages to stderr")
 	    ("format,f", po::value<string>(&outputFormatString)->default_value(string("obj")),
 	  "Format of the file to be create (avr or obj)")
 	    ("output,o", po::value<string>(&outputFile),
@@ -229,6 +231,9 @@ int main(int argc, char** argv)
 			blockSize.y / gridDim.y,
 			blockSize.z / gridDim.z
 		};
+		if(debug) {
+			cerr << "Processed blocks 0/"<< gridConf.x * gridConf.y * gridConf.z << std::endl;
+		}
 		for(int i=0; i<gridConf.x; i++) {
 			for(int j=0; j<gridConf.y; j++){
 				for(int k=0; k<gridConf.z; k++){
@@ -250,6 +255,12 @@ int main(int argc, char** argv)
 					ctx.getBlobProgram()->runBlob(blobs.get(), nBlobs, grid);
 					MarchingCubes* mc = ctx.getMcProgram();
 					meshes.push_back(mc->compute(grid, 1.0f));
+					if(debug) {
+						cerr << '\r' << "Processed blocks "
+						     << i*(gridConf.z*gridConf.y) + j*gridConf.z + k
+						     << "/"
+						     << gridConf.x * gridConf.y * gridConf.z;
+					}
 					if(bailout) goto after_computation;
 				}
 			}
