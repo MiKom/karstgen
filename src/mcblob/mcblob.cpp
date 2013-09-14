@@ -232,9 +232,10 @@ int main(int argc, char** argv)
 			blockSize.z / gridDim.z
 		};
 		if(debug) {
-			cerr << "Processed blocks 0/"<< gridConf.x * gridConf.y * gridConf.z << std::endl;
+			cerr << "Processed blocks 0/"<< gridConf.x * gridConf.y * gridConf.z;
 		}
-		for(int i=0; i<gridConf.x; i++) {
+		int generatedVertices = 0;
+		for(int i=1; i<gridConf.x; i++) {
 			for(int j=0; j<gridConf.y; j++){
 				for(int k=0; k<gridConf.z; k++){
 					float3 blockStart {
@@ -256,16 +257,21 @@ int main(int argc, char** argv)
 					MarchingCubes* mc = ctx.getMcProgram();
 					meshes.push_back(mc->compute(grid, 1.0f));
 					if(debug) {
+						generatedVertices += meshes.at(meshes.size() - 1).verts.size();
 						cerr << '\r' << "Processed blocks "
 						     << i*(gridConf.z*gridConf.y) + j*gridConf.z + k
 						     << "/"
-						     << gridConf.x * gridConf.y * gridConf.z;
+						     << gridConf.x * gridConf.y * gridConf.z << " "
+						     << "Vertices generated " << generatedVertices;
 					}
 					if(bailout) goto after_computation;
 				}
 			}
 		}
 after_computation:
+		if(debug) {
+			cout<< "\n";
+		}
 		
 		switch(outputFormat) {
 		case OutputFormat::OUTPUT_FORMAT_AVR:
