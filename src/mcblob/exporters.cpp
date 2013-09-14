@@ -62,14 +62,16 @@ void export_wavefront_obj(std::vector<MCMesh> meshes, std::string fileName)
 		MCMesh& mesh = meshes[i];
 		for(int j{0}; j < mesh.verts.size(); j++) {
 			float3 v = mesh.verts[j];
-			file << "v " << v.x << " " << v.y << " " << v.z << endl;
+			//x negated to make blender importer happy
+			file << "v " << -v.x << " " << v.y << " " << v.z << endl;
 		}
 	}
 	for(int i{0}; i<meshes.size(); i++) {
 		MCMesh& mesh = meshes[i];
 		for(int j{0}; j < mesh.normals.size(); j++) {
 			float3 v = mesh.normals[j];
-			file << "vn " << v.x << " " << v.y << " " << v.z << endl;
+			//x negated to make blender importer happy
+			file << "vn " << -v.x << " " << v.y << " " << v.z << endl;
 		}
 	}
 	
