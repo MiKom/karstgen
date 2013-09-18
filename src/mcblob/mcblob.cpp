@@ -235,7 +235,7 @@ int main(int argc, char** argv)
 			cerr << "Processed blocks 0/"<< gridConf.x * gridConf.y * gridConf.z;
 		}
 		int generatedVertices = 0;
-		for(int i=1; i<gridConf.x; i++) {
+		for(int i=0; i<gridConf.x; i++) {
 			for(int j=0; j<gridConf.y; j++){
 				for(int k=0; k<gridConf.z; k++){
 					float3 blockStart {
