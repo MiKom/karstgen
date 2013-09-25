@@ -1,5 +1,6 @@
 #define EPSILON 0.0001
-#define DIV_EPSILON 0.000000001
+
+#define BLOBINESS 1.0f
 
 uint4 calcGridPos(uint i, uint4 gridSize)
 {
@@ -15,13 +16,11 @@ uint4 calcGridPos(uint i, uint4 gridSize)
 float
 singleBlobVal(float4 blob, float4 pos)
 {
-	return blob.w / 
-		max(
-		     DIV_EPSILON,
-		     (pos.x - blob.x) * (pos.x - blob.x) +
-		     (pos.y - blob.y) * (pos.y - blob.y) +
-		     (pos.z - blob.z) * (pos.z - blob.z)
-		);
+	float4 dist = (float4)(blob.xyz - pos.xyz, 0.0f);
+	
+	return native_exp(
+		-BLOBINESS * native_recip(blob.w*blob.w) * dot(dist, dist) + BLOBINESS
+	);
 }
 
 /**
@@ -57,7 +56,6 @@ blobValue(
 	for(int i=0; i<nBlobs; i++) {
 		blob = blobs[i];
 		blob.w /= 2.0f; //HACK: we have diameter in parameter, but equations in form below treat .w as radius
-		blob.w *= blob.w; //WARNING: hack to make blobs roughly the same diameter as w parameter
 		
 		tmpVal = singleBlobVal(blob, pos);
 		val += tmpVal;
