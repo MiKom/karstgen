@@ -99,8 +99,9 @@ using namespace std;
 
 //Constant parameters
 static const int BLOCK_LOG_SIZE = 5;
-static const float BLOB_SPACING_COEFF = 1.2f;
-static const float FILLER_BLOB_DIAM_COEFF = 1.8f;
+static const float BLOB_SPACING_COEFF =0.75f;
+static const float FILLER_BLOB_DIAM_COEFF = 2.6f;
+
 
 //Variables for parameters
 static string outputFile = "-";
@@ -263,7 +264,8 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 	}
 	
 	float pos = firstPointDiam * BLOB_SPACING_COEFF;
-	float limit = vectorLen - (nextDpMidDiam / 2.0);
+	float lastBlobBorder = firstPointDiam / 2.0f;
+	float limit = vectorLen - (nextDpMidDiam / 2.0f);
 	int nPoints = data.size() + 1;
 	float segmentLen = vectorLen / nPoints;
 	while (pos <= limit) {
@@ -280,11 +282,19 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 		} else {
 			diam = glm::mix(data[segmentStartIdx - 1], data[segmentStartIdx], frac);
 		}
-
+		
 		//If diameter of calculated blob is too small, makes sure, that
 		//pos is moved by some moderate value on each step.
 		if(diam > 0.1f) {
+			//If next blob is too small to connect with previous one
+			//move back to a point where it would potentially
+			//connect
+			if(pos - (diam / 2.0f) > lastBlobBorder) {
+				pos -= pos - (diam/2.0) - lastBlobBorder;
+				continue;
+			}
 			ret.push_back(glm::vec2{pos, diam});
+			lastBlobBorder = pos + diam/2.0f;
 			
 			//If this is the last blob to be added on this vector,
 			//check if space to the next blob is filled well.
@@ -302,7 +312,7 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 			pos += 0.1f;
 		}
 	}
-	
+	cerr << "test\n";
 	return ret;
 }
 
