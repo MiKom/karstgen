@@ -20,13 +20,13 @@ static const char sGenerateTrianglesFunc[] = "generateTriangles";
 
 //Constants
 static const int CLASSIFY_VOXELS_THREADS_PER_WG = 128;
-static const bool CLASSIFY_VOXELS_USE_ALL_CARDS = true;
+static const bool CLASSIFY_VOXELS_USE_ALL_CARDS = false;
 
 static const int COMPACT_VOXELS_THREADS_PER_WG = 128;
-static const bool COMPACT_VOXELS_USE_ALL_CARDS = true;
+static const bool COMPACT_VOXELS_USE_ALL_CARDS = false;
 
 static const int GENERATE_TRIANGLES_THREADS_PER_WG = 32;
-static const int GENERATE_TRIANGLES_USE_ALL_CARDS = true;
+static const int GENERATE_TRIANGLES_USE_ALL_CARDS = false;
 
 /**
   \param scan pointer to object storing initialized scan program object
