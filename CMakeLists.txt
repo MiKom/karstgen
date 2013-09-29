@@ -24,7 +24,7 @@ IF(BUILD_DOCUMENTATION)
 	IF(NOT_DOXYGEN_FOUND)
 		MESSAGE(FATAL_ERROR "Doxygen is needed to build the documentation")
 	ENDIF()
-	
+	FILE(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/doc )
 	#TODO: Unify documentation generation. Either one Doxyfile for whole project
 	#divided into modules or abstract cmake targets and make doc for each
 	#executable
