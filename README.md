@@ -15,6 +15,7 @@ compile successfully:
 * cmake
 * libglm-dev
 * OpenCL runtime (for nvidia it's shipped with driver in package nvidia-current)
+* OpenCL headers (for nvidia it's best to install nvidia-opencl-dev)
 
 For test suite to work *libgtest-dev* must also be installed and compiled.
 
