@@ -312,7 +312,6 @@ blobsOnVector(float firstPointDiam, const vector<float>& data, float nextDpMidDi
 			pos += 0.1f;
 		}
 	}
-	cerr << "test\n";
 	return ret;
 }
 
